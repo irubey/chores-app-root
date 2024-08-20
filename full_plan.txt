@@ -1,0 +1,473 @@
+= SPEC-001: Household Chore Management App
+:sectnums:
+:toc:
+
+
+== Background
+
+The Household Chore Management App is designed to streamline the process of managing household tasks among multiple roommates. The app will allow users to create and assign chores, track progress, and receive notifications when chores are completed or need attention. The goal is to reduce friction in shared living situations by providing clear communication and accountability.
+
+This project will be implemented as both a mobile and web application. Given the developer's familiarity with React, Next.js, and PostgreSQL, the app will leverage these technologies for the web interface and backend. For mobile development, a React Native approach will be used to maintain consistency across platforms. User authentication will be handled via OAuth, allowing users to sign in with existing accounts from Google, Facebook, or Apple.
+
+== Requirements
+
+The app will include the following features, prioritized using the MoSCoW method:
+
+*Must Have:*
+- Ability for multiple users (roommates) to access the same household account.
+- Chore checklist with time estimates for completion.
+- Ability to assign chores to specific household members.
+- Notifications to alert users of pending or completed chores.
+- Chore refresh rates (e.g., daily, weekly, monthly).
+- OAuth-based user authentication for secure login and data synchronization.
+
+*Should Have:*
+- Ability to divide chores based on estimated time and frequency.
+- Mobile app developed using React Native for cross-platform consistency.
+- Web app using React and Next.js for fast, SEO-friendly pages.
+
+*Could Have:*
+- Custom notifications based on user preferences.
+- A dashboard that shows chore completion statistics.
+
+*Won’t Have:*
+- Advanced gamification features (e.g., rewards or points systems).
+- Integration with third-party home automation systems (e.g., smart speakers).
+
+== Method
+
+=== Architecture Overview
+
+The Household Chore Management App will be built using a three-tier architecture, consisting of:
+
+1. **Frontend Layer**:
+   - **Web Application**: Developed using React and Next.js. This will be a Single Page Application (SPA) with server-side rendering (SSR) to ensure fast loading times and SEO optimization.
+   - **Mobile Application**: Developed using React Native, which will share most of the codebase with the web application for consistency and efficiency.
+   - **Key Features**:
+     - User interfaces for chore management, assignment, and notifications.
+     - OAuth-based user authentication and session management.
+     - Real-time updates on chore completion and assignment.
+
+2. **Backend Layer**:
+   - **API Server**: Built using Node.js and Express, handling all the business logic and database interactions.
+   - **OAuth Authentication**: Integrated with third-party OAuth providers (Google, Facebook, Apple) to handle user authentication. User sessions will be managed using JWT (JSON Web Tokens) for secure communication between the client and server.
+   - **Key Features**:
+     - RESTful APIs to manage chores, households, user accounts, and notifications.
+     - Business logic for chore scheduling, notifications, and assignment.
+
+3. **Data Layer**:
+   - **Database**: PostgreSQL will be used to store all the app’s data, including user information, household details, chores, and notification settings.
+   - **Schema Overview**:
+     - **Users Table**: Stores user credentials, OAuth tokens, and associated household memberships.
+     - **Households Table**: Stores information about each household, including its members and settings.
+     - **Chores Table**: Tracks each chore's details, such as description, time estimate, frequency, and assignment status.
+     - **Notifications Table**: Logs notifications sent to users, including the type (e.g., chore reminder, completion notification) and timestamp.
+
+=== Database Schema
+
+The database schema for the app is designed to support multi-user households, chore management, and notifications. The following tables are key to the system:
+
+==== 1. Users Table
+Stores information about each user, including OAuth credentials and associated households.
+
+[plantuml]
+----
+entity "Users" {
+  *id : UUID [PK]
+  --
+  *email : varchar
+  *name : varchar
+  *oauth_provider : varchar
+  *oauth_id : varchar [unique]
+  *created_at : timestamp
+  *updated_at : timestamp
+}
+----
+
+- **id**: Unique identifier for each user.
+- **email**: User's email address.
+- **name**: User's name.
+- **oauth_provider**: The OAuth provider (e.g., Google, Facebook).
+- **oauth_id**: Unique identifier from the OAuth provider.
+- **created_at**: Timestamp when the user account was created.
+- **updated_at**: Timestamp when the user account was last updated.
+
+==== 2. Households Table
+Tracks households, which are groups of users sharing chores.
+
+[plantuml]
+----
+entity "Households" {
+  *id : UUID [PK]
+  --
+  *name : varchar
+  *created_at : timestamp
+}
+----
+
+- **id**: Unique identifier for each household.
+- **name**: Name of the household.
+- **created_at**: Timestamp when the household was created.
+
+==== 3. Household_Members Table
+A join table that links users to households.
+
+[plantuml]
+----
+entity "Household_Members" {
+  *user_id : UUID [FK -> Users.id]
+  *household_id : UUID [FK -> Households.id]
+  --
+  *role : varchar
+  *joined_at : timestamp
+}
+----
+
+- **user_id**: References the user.
+- **household_id**: References the household.
+- **role**: Defines the user's role within the household (e.g., admin, member).
+- **joined_at**: Timestamp when the user joined the household.
+
+==== 4. Chores Table
+Stores details about chores within a household.
+
+[plantuml]
+----
+entity "Chores" {
+  *id : UUID [PK]
+  --
+  *household_id : UUID [FK -> Households.id]
+  *title : varchar
+  *description : text
+  *time_estimate : integer
+  *frequency : varchar
+  *assigned_to : UUID [FK -> Users.id] nullable
+  *status : varchar
+  *created_at : timestamp
+  *updated_at : timestamp
+  *due_date : date
+}
+----
+
+- **id**: Unique identifier for each chore.
+- **household_id**: References the household the chore belongs to.
+- **title**: Title of the chore.
+- **description**: Description of the chore.
+- **time_estimate**: Estimated time to complete the chore (in minutes).
+- **frequency**: Frequency of the chore (e.g., daily, weekly, monthly).
+- **assigned_to**: References the user assigned to the chore (nullable if unassigned).
+- **status**: Status of the chore (e.g., pending, in-progress, completed).
+- **created_at**: Timestamp when the chore was created.
+- **updated_at**: Timestamp when the chore was last updated.
+- **due_date**: The next due date for the chore, based on its frequency.
+
+==== 5. Notifications Table
+Logs notifications sent to users about chore updates.
+
+[plantuml]
+----
+entity "Notifications" {
+  *id : UUID [PK]
+  --
+  *user_id : UUID [FK -> Users.id]
+  *chore_id : UUID [FK -> Chores.id] nullable
+  *type : varchar
+  *message : text
+  *sent_at : timestamp
+}
+----
+
+- **id**: Unique identifier for each notification.
+- **user_id**: References the user receiving the notification.
+- **chore_id**: References the related chore (nullable for general notifications).
+- **type**: Type of notification (e.g., chore assigned, chore completed).
+- **message**: Content of the notification.
+- **sent_at**: Timestamp when the notification was sent.
+
+=== Component Design
+
+==== 1. Authentication Components
+Handles user login and registration using OAuth.
+
+- **Login Page**
+  - Allows users to log in using OAuth (Google, Facebook, Apple).
+  - Redirects to the dashboard upon successful login.
+  
+- **OAuthCallback Component**
+  - Handles the OAuth callback process and exchanges the OAuth code for a JWT token.
+  - Manages the user's session and redirects them to the appropriate page.
+
+==== 2. Dashboard Component
+The central hub where users can view and manage their household and chores.
+
+- **Household Selector**
+  - Dropdown or list that allows users to select or switch between different households.
+  - Displays the household name and the number of pending chores.
+
+- **Chore Summary**
+  - Displays a list of all chores, categorized by status (e.g., pending, in-progress, completed).
+  - Includes filters to view chores by frequency (daily, weekly, monthly) or assigned user.
+
+- **Chore Assignment**
+  - Interface for assigning chores to household members.
+  - Displays a list of users in the household with options to assign or reassign chores.
+  - Shows the estimated time and frequency of each chore.
+
+- **Chore Creation**
+  - Modal or form component for creating new chores.
+  - Includes fields for the title, description, time estimate, frequency, and assignment.
+
+- **Notification Center**
+  - Displays recent notifications about chore updates (e.g., completed chores, new assignments).
+  - Allows users to mark notifications as read or dismiss them.
+
+==== 3. Chore Detail Component
+Provides detailed information about a specific chore.
+
+- **Chore Overview**
+  - Shows the chore’s title, description, estimated time, frequency, and assigned user.
+  - Displays the due date and status (pending, in-progress, completed).
+  
+- **Edit Chore**
+  - Interface for editing the chore’s details or reassigning it to another user.
+  
+- **Chore Activity Log**
+  - Displays a timeline of actions taken on the chore (e.g., creation, updates, completion).
+
+==== 4. User Management Components
+Handles user-specific settings and preferences.
+
+- **Profile Page**
+  - Allows users to view and edit their profile information, such as name and email.
+  - Option to link or unlink OAuth accounts.
+
+- **Household Management**
+  - Interface for creating new households or inviting users to existing ones.
+  - Allows users to manage household settings and member roles (e.g., admin, member).
+
+==== 5. Notifications Component
+Manages user notifications across the web and mobile platforms.
+
+- **Notification List**
+  - Displays a chronological list of all notifications.
+  - Includes filters for different types of notifications (e.g., assignments, completions).
+
+- **Push Notifications (Mobile Only)**
+  - Handles real-time push notifications on mobile devices, alerting users to important updates.
+  - Manages notification preferences, allowing users to opt in or out of specific types.
+
+==== 6. Settings Component
+Provides access to app-wide settings and preferences.
+
+- **App Settings**
+  - Allows users to configure settings like notification preferences, default chore view (e.g., list, calendar), and theme (light/dark mode).
+  
+- **Chore Scheduling Preferences**
+  - Allows users to customize the refresh rates and reminders for different types of chores (e.g., receive reminders one day before due).
+
+=== API Design
+
+The APIs will follow RESTful principles, ensuring that each endpoint is intuitive and stateless. Here's a breakdown of the key API endpoints:
+
+==== 1. Authentication API
+Handles user authentication via OAuth and session management.
+
+- **POST /auth/login**
+  - Initiates the OAuth login process.
+  - Request: `{ provider: "google" | "facebook" | "apple" }`
+  - Response: Redirects to the OAuth provider's login page.
+
+- **POST /auth/callback**
+  - Handles the callback from the OAuth provider.
+  - Request: `{ code: "oauth_code_from_provider" }`
+  - Response: `{ token: "jwt_token" }`
+  - Description: Exchanges the OAuth code for a JWT token.
+
+- **GET /auth/user**
+  - Retrieves the currently authenticated user's details.
+  - Response: `{ id, email, name, households[] }`
+  - Description: Uses the JWT token to authenticate and return user information.
+
+- **POST /auth/logout**
+  - Logs out the user by invalidating the session.
+  - Response: `{ message: "Logged out successfully" }`
+
+==== 2. Household Management API
+Manages household creation, membership, and details.
+
+- **POST /households**
+  - Creates a new household.
+  - Request: `{ name: "Household Name" }`
+  - Response: `{ id, name, created_at }`
+  - Description: Creates a new household and associates it with the current user.
+
+- **GET /households**
+  - Retrieves all households the user is a member of.
+  - Response: `[{ id, name, members[] }]`
+  - Description: Returns a list of households with member details.
+
+- **POST /households/{household_id}/members**
+  - Adds a new member to the household.
+  - Request: `{ email, role }`
+  - Response: `{ message: "Invitation sent" }`
+  - Description: Sends an invitation to join the household.
+
+- **DELETE /households/{household_id}/members/{user_id}**
+  - Removes a member from the household.
+  - Response: `{ message: "Member removed" }`
+  - Description: Removes the user from the specified household.
+
+==== 3. Chore Management API
+Handles CRUD operations for chores within a household.
+
+- **POST /households/{household_id}/chores**
+  - Creates a new chore within a household.
+  - Request: `{ title, description, time_estimate, frequency, assigned_to }`
+  - Response: `{ id, title, status, due_date }`
+  - Description: Adds a new chore and assigns it within the household.
+
+- **GET /households/{household_id}/chores**
+  - Retrieves all chores for a household.
+  - Response: `[{ id, title, assigned_to, status, due_date }]`
+  - Description: Returns a list of chores, optionally filtered by status or frequency.
+
+- **GET /chores/{chore_id}**
+  - Retrieves detailed information about a specific chore.
+  - Response: `{ id, title, description, time_estimate, assigned_to, status, due_date, activity_log[] }`
+  - Description: Returns detailed information, including the activity log.
+
+- **PUT /chores/{chore_id}**
+  - Updates a specific chore's details.
+  - Request: `{ title, description, time_estimate, frequency, assigned_to, status }`
+  - Response: `{ message: "Chore updated" }`
+  - Description: Modifies the chore's attributes or reassigns it.
+
+- **DELETE /chores/{chore_id}**
+  - Deletes a specific chore.
+  - Response: `{ message: "Chore deleted" }`
+  - Description: Removes the chore from the household.
+
+==== 4. Notifications API
+Manages notifications related to chores and household activities.
+
+- **GET /notifications**
+  - Retrieves all notifications for the user.
+  - Response: `[{ id, type, message, sent_at, chore_id }]`
+  - Description: Returns a list of notifications, optionally filtered by type.
+
+- **POST /notifications/mark-as-read**
+  - Marks notifications as read.
+  - Request: `{ notification_ids[] }`
+  - Response: `{ message: "Notifications marked as read" }`
+  - Description: Updates the status of notifications to read.
+
+- **POST /notifications**
+  - Sends a new notification to users.
+  - Request: `{ user_id, type, message, chore_id }`
+  - Response: `{ message: "Notification sent" }`
+  - Description: Sends a notification, typically used by the system to alert users of chore updates.
+
+== Implementation
+
+=== Phase 1: Project Setup and Initial Development
+
+- **Task 1.1: Set Up Project Repositories**
+  - Create separate repositories for the backend and frontend.
+  - Set up version control (e.g., GitHub) and configure continuous integration (CI) for automated testing.
+
+- **Task 1.2: Configure Docker Environment**
+  - Create Dockerfiles for the backend, frontend, and database services.
+  - Use Docker Compose to manage the multi-container setup, ensuring volume mounting for local development.
+  - Configure environment variables and secrets for OAuth and database connections.
+
+- **Task 1.3: Set Up Backend with Node.js and Express**
+  - Initialize the Node.js project and set up Express for the API server.
+  - Implement basic middleware for logging, error handling, and JSON parsing.
+  - Set up PostgreSQL connection using Docker, and initialize the database with the schema defined.
+
+- **Task 1.4: Set Up Frontend with React and Next.js**
+  - Initialize the Next.js project for the web application.
+  - Set up routing and basic page structure (e.g., Login Page, Dashboard).
+  - Integrate OAuth login with the frontend, handling user sessions within Docker containers.
+
+- **Task 1.5: Set Up React Native for Mobile Development**
+  - Initialize the React Native project.
+  - Set up basic navigation and screen structure.
+  - Integrate OAuth login within the mobile app, and use Docker for consistent backend integration during development.
+
+=== Phase 2: Core Features Development
+
+- **Task 2.1: Implement Household Management**
+  - Backend: Develop endpoints for creating households, managing members, and retrieving household details.
+  - Frontend: Create components for household creation, member management, and household switching.
+  - Mobile: Implement the household management UI, with real-time updates handled via the backend.
+
+- **Task 2.2: Develop Chore Management**
+  - Backend: Implement CRUD operations for chores, including assigning chores to users and managing chore statuses.
+  - Frontend: Build the chore summary, creation, assignment, and detail view components.
+  - Mobile: Implement chore management screens, ensuring synchronization with the backend via Docker.
+
+- **Task 2.3: Implement Notifications**
+  - Backend: Develop endpoints for sending, retrieving, and managing notifications.
+  - Frontend: Create the notification center and integrate real-time updates using WebSockets or polling.
+  - Mobile: Implement push notifications and the notification center.
+
+=== Phase 3: Testing and Refinement
+
+- **Task 3.1: Unit and Integration Testing**
+  - Write unit tests for all backend API endpoints using a testing framework like Jest or Mocha.
+  - Perform integration testing to ensure the frontend and backend work seamlessly together within the Docker environment.
+
+- **Task 3.2: End-to-End Testing**
+  - Use tools like Cypress for end-to-end testing of the web application.
+  - Perform manual testing on mobile devices to ensure a smooth user experience across platforms.
+
+- **Task 3.3: Performance Optimization**
+  - Optimize database queries and add indexing where necessary.
+  - Implement frontend optimizations like lazy loading and code splitting in Next.js.
+
+=== Phase 4: Deployment and Launch
+
+- **Task 4.1: Prepare for Production Deployment**
+  - Set up production environments for both the backend and frontend (e.g., AWS, Vercel).
+  - Use Docker for containerized deployments, ensuring environment parity with the development setup.
+  - Configure environment variables for OAuth credentials and database connections.
+
+- **Task 4.2: Deploy Web Application**
+  - Deploy the Next.js web app to a hosting service like Vercel.
+  - Set up DNS and SSL for a custom domain.
+
+- **Task 4.3: Deploy Mobile Application**
+  - Package the React Native app for iOS and Android.
+  - Publish the app on the Apple App Store and Google Play Store.
+
+- **Task 4.4: Monitor and Maintenance**
+  - Set up monitoring and logging for both the backend and frontend.
+  - Prepare for regular updates and bug fixes based on user feedback.
+
+== Milestones
+
+=== Milestone 1: Initial Setup (2 Weeks)
+- Complete the project setup with Docker, including repositories and initial configurations.
+- Set up the basic backend and frontend structure with Docker for local development.
+
+=== Milestone 2: Core Functionality (4-6 Weeks)
+- Implement household and chore management features.
+- Integrate OAuth authentication and user management.
+- Develop the notification system.
+
+=== Milestone 3: Testing and Refinement (3-4 Weeks)
+- Complete unit, integration, and end-to-end testing.
+- Optimize the application for performance and user experience.
+
+=== Milestone 4: Deployment and Launch (2-3 Weeks)
+- Prepare and deploy the application to production environments.
+- Publish the mobile application to app stores.
+- Set up monitoring and maintenance processes.
+
+== Gathering Results
+
+=== Evaluation
+- Conduct user testing to gather feedback on the core features.
+- Monitor the app’s performance and reliability in production.
+- Review user feedback for potential improvements and future updates.
