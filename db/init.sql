@@ -1,4 +1,6 @@
-\c ${POSTGRES_DB}
+CREATE DATABASE userDb;
+
+\c userDb
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
