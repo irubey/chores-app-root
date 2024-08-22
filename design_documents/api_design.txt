@@ -1,0 +1,101 @@
+=== API Design
+
+The APIs will follow RESTful principles, ensuring that each endpoint is intuitive and stateless. Here's a breakdown of the key API endpoints:
+
+==== 1. Authentication API
+Handles user authentication via OAuth and session management.
+
+- **POST /auth/login**
+  - Initiates the OAuth login process.
+  - Request: `{ provider: "google" | "facebook" | "apple" }`
+  - Response: Redirects to the OAuth provider's login page.
+
+- **POST /auth/callback**
+  - Handles the callback from the OAuth provider.
+  - Request: `{ code: "oauth_code_from_provider" }`
+  - Response: `{ token: "jwt_token" }`
+  - Description: Exchanges the OAuth code for a JWT token.
+
+- **GET /auth/user**
+  - Retrieves the currently authenticated user's details.
+  - Response: `{ id, email, name, households[] }`
+  - Description: Uses the JWT token to authenticate and return user information.
+
+- **POST /auth/logout**
+  - Logs out the user by invalidating the session.
+  - Response: `{ message: "Logged out successfully" }`
+
+==== 2. Household Management API
+Manages household creation, membership, and details.
+
+- **POST /households**
+  - Creates a new household.
+  - Request: `{ name: "Household Name" }`
+  - Response: `{ id, name, created_at }`
+  - Description: Creates a new household and associates it with the current user.
+
+- **GET /households**
+  - Retrieves all households the user is a member of.
+  - Response: `[{ id, name, members[] }]`
+  - Description: Returns a list of households with member details.
+
+- **POST /households/{household_id}/members**
+  - Adds a new member to the household.
+  - Request: `{ email, role }`
+  - Response: `{ message: "Invitation sent" }`
+  - Description: Sends an invitation to join the household.
+
+- **DELETE /households/{household_id}/members/{user_id}**
+  - Removes a member from the household.
+  - Response: `{ message: "Member removed" }`
+  - Description: Removes the user from the specified household.
+
+==== 3. Chore Management API
+Handles CRUD operations for chores within a household.
+
+- **POST /households/{household_id}/chores**
+  - Creates a new chore within a household.
+  - Request: `{ title, description, time_estimate, frequency, assigned_to }`
+  - Response: `{ id, title, status, due_date }`
+  - Description: Adds a new chore and assigns it within the household.
+
+- **GET /households/{household_id}/chores**
+  - Retrieves all chores for a household.
+  - Response: `[{ id, title, assigned_to, status, due_date }]`
+  - Description: Returns a list of chores, optionally filtered by status or frequency.
+
+- **GET /chores/{chore_id}**
+  - Retrieves detailed information about a specific chore.
+  - Response: `{ id, title, description, time_estimate, assigned_to, status, due_date, activity_log[] }`
+  - Description: Returns detailed information, including the activity log.
+
+- **PUT /chores/{chore_id}**
+  - Updates a specific chore's details.
+  - Request: `{ title, description, time_estimate, frequency, assigned_to, status }`
+  - Response: `{ message: "Chore updated" }`
+  - Description: Modifies the chore's attributes or reassigns it.
+
+- **DELETE /chores/{chore_id}**
+  - Deletes a specific chore.
+  - Response: `{ message: "Chore deleted" }`
+  - Description: Removes the chore from the household.
+
+==== 4. Notifications API
+Manages notifications related to chores and household activities.
+
+- **GET /notifications**
+  - Retrieves all notifications for the user.
+  - Response: `[{ id, type, message, sent_at, chore_id }]`
+  - Description: Returns a list of notifications, optionally filtered by type.
+
+- **POST /notifications/mark-as-read**
+  - Marks notifications as read.
+  - Request: `{ notification_ids[] }`
+  - Response: `{ message: "Notifications marked as read" }`
+  - Description: Updates the status of notifications to read.
+
+- **POST /notifications**
+  - Sends a new notification to users.
+  - Request: `{ user_id, type, message, chore_id }`
+  - Response: `{ message: "Notification sent" }`
+  - Description: Sends a notification, typically used by the system to alert users of chore updates.

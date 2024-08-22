@@ -1,0 +1,26 @@
+=== Architecture Overview
+
+The Household Chore Management App will be built using a three-tier architecture, consisting of:
+
+1. **Frontend Layer**:
+   - **Web Application**: Developed using React and Next.js. This will be a Single Page Application (SPA) with server-side rendering (SSR) to ensure fast loading times and SEO optimization.
+   - **Mobile Application**: Developed using React Native, which will share most of the codebase with the web application for consistency and efficiency.
+   - **Key Features**:
+     - User interfaces for chore management, assignment, and notifications.
+     - OAuth-based user authentication and session management.
+     - Real-time updates on chore completion and assignment.
+
+2. **Backend Layer**:
+   - **API Server**: Built using Node.js and Express, handling all the business logic and database interactions.
+   - **OAuth Authentication**: Integrated with third-party OAuth providers (Google, Facebook, Apple) to handle user authentication. User sessions will be managed using JWT (JSON Web Tokens) for secure communication between the client and server.
+   - **Key Features**:
+     - RESTful APIs to manage chores, households, user accounts, and notifications.
+     - Business logic for chore scheduling, notifications, and assignment.
+
+3. **Data Layer**:
+   - **Database**: PostgreSQL will be used to store all the app’s data, including user information, household details, chores, and notification settings.
+   - **Schema Overview**:
+     - **Users Table**: Stores user credentials, OAuth tokens, and associated household memberships.
+     - **Households Table**: Stores information about each household, including its members and settings.
+     - **Chores Table**: Tracks each chore's details, such as description, time estimate, frequency, and assignment status.
+     - **Notifications Table**: Logs notifications sent to users, including the type (e.g., chore reminder, completion notification) and timestamp.

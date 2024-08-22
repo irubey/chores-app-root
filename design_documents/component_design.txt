@@ -1,0 +1,80 @@
+=== Component Design 
+
+==== 1. Authentication Components
+Handles user login and registration using OAuth.
+
+- **Login Page**
+  - Allows users to log in using OAuth (Google, Facebook, Apple).
+  - Redirects to the dashboard upon successful login.
+  
+- **OAuthCallback Component**
+  - Handles the OAuth callback process and exchanges the OAuth code for a JWT token.
+  - Manages the user's session and redirects them to the appropriate page.
+
+==== 2. Dashboard Component
+The central hub where users can view and manage their household and chores.
+
+- **Household Selector**
+  - Dropdown or list that allows users to select or switch between different households.
+  - Displays the household name and the number of pending chores.
+
+- **Chore Summary**
+  - Displays a list of all chores, categorized by status (e.g., pending, in-progress, completed).
+  - Includes filters to view chores by frequency (daily, weekly, monthly) or assigned user.
+
+- **Chore Assignment**
+  - Interface for assigning chores to household members.
+  - Displays a list of users in the household with options to assign or reassign chores.
+  - Shows the estimated time and frequency of each chore.
+
+- **Chore Creation**
+  - Modal or form component for creating new chores.
+  - Includes fields for the title, description, time estimate, frequency, and assignment.
+
+- **Notification Center**
+  - Displays recent notifications about chore updates (e.g., completed chores, new assignments).
+  - Allows users to mark notifications as read or dismiss them.
+
+==== 3. Chore Detail Component
+Provides detailed information about a specific chore.
+
+- **Chore Overview**
+  - Shows the chore’s title, description, estimated time, frequency, and assigned user.
+  - Displays the due date and status (pending, in-progress, completed).
+  
+- **Edit Chore**
+  - Interface for editing the chore’s details or reassigning it to another user.
+  
+- **Chore Activity Log**
+  - Displays a timeline of actions taken on the chore (e.g., creation, updates, completion).
+
+==== 4. User Management Components
+Handles user-specific settings and preferences.
+
+- **Profile Page**
+  - Allows users to view and edit their profile information, such as name and email.
+  - Option to link or unlink OAuth accounts.
+
+- **Household Management**
+  - Interface for creating new households or inviting users to existing ones.
+  - Allows users to manage household settings and member roles (e.g., admin, member).
+
+==== 5. Notifications Component
+Manages user notifications across the web and mobile platforms.
+
+- **Notification List**
+  - Displays a chronological list of all notifications.
+  - Includes filters for different types of notifications (e.g., assignments, completions).
+
+- **Push Notifications (Mobile Only)**
+  - Handles real-time push notifications on mobile devices, alerting users to important updates.
+  - Manages notification preferences, allowing users to opt in or out of specific types.
+
+==== 6. Settings Component
+Provides access to app-wide settings and preferences.
+
+- **App Settings**
+  - Allows users to configure settings like notification preferences, default chore view (e.g., list, calendar), and theme (light/dark mode).
+  
+- **Chore Scheduling Preferences**
+  - Allows users to customize the refresh rates and reminders for different types of chores (e.g., receive reminders one day before due).

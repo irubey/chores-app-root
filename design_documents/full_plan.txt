@@ -184,7 +184,7 @@ entity "Notifications" {
 - **message**: Content of the notification.
 - **sent_at**: Timestamp when the notification was sent.
 
-=== Component Design
+=== Component Design 
 
 ==== 1. Authentication Components
 Handles user login and registration using OAuth.
