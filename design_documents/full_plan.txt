@@ -30,7 +30,7 @@ The app will include the following features, prioritized using the MoSCoW method
 - Custom notifications based on user preferences.
 - A dashboard that shows chore completion statistics.
 
-*Won’t Have:*
+*Won't Have:*
 - Advanced gamification features (e.g., rewards or points systems).
 - Integration with third-party home automation systems (e.g., smart speakers).
 
@@ -50,18 +50,21 @@ The Household Chore Management App will be built using a three-tier architecture
 
 2. **Backend Layer**:
    - **API Server**: Built using Node.js and Express, handling all the business logic and database interactions.
+   - **ORM**: Prisma will be used as the Object-Relational Mapping (ORM) tool to interact with the PostgreSQL database, providing a type-safe query builder and schema migrations.
    - **OAuth Authentication**: Integrated with third-party OAuth providers (Google, Facebook, Apple) to handle user authentication. User sessions will be managed using JWT (JSON Web Tokens) for secure communication between the client and server.
    - **Key Features**:
      - RESTful APIs to manage chores, households, user accounts, and notifications.
      - Business logic for chore scheduling, notifications, and assignment.
+     - Prisma will handle database operations, including querying, updating, and schema management.
 
 3. **Data Layer**:
-   - **Database**: PostgreSQL will be used to store all the app’s data, including user information, household details, chores, and notification settings.
-   - **Schema Overview**:
+   - **Database**: PostgreSQL will be used to store all the app's data, including user information, household details, chores, and notification settings.
+   - **Schema Overview - Managed by Prisma**:
      - **Users Table**: Stores user credentials, OAuth tokens, and associated household memberships.
      - **Households Table**: Stores information about each household, including its members and settings.
      - **Chores Table**: Tracks each chore's details, such as description, time estimate, frequency, and assignment status.
      - **Notifications Table**: Logs notifications sent to users, including the type (e.g., chore reminder, completion notification) and timestamp.
+
 
 === Database Schema
 
@@ -225,11 +228,11 @@ The central hub where users can view and manage their household and chores.
 Provides detailed information about a specific chore.
 
 - **Chore Overview**
-  - Shows the chore’s title, description, estimated time, frequency, and assigned user.
+  - Shows the chore's title, description, estimated time, frequency, and assigned user.
   - Displays the due date and status (pending, in-progress, completed).
   
 - **Edit Chore**
-  - Interface for editing the chore’s details or reassigning it to another user.
+  - Interface for editing the chore's details or reassigning it to another user.
   
 - **Chore Activity Log**
   - Displays a timeline of actions taken on the chore (e.g., creation, updates, completion).
@@ -469,5 +472,5 @@ Manages notifications related to chores and household activities.
 
 === Evaluation
 - Conduct user testing to gather feedback on the core features.
-- Monitor the app’s performance and reliability in production.
+- Monitor the app's performance and reliability in production.
 - Review user feedback for potential improvements and future updates.
