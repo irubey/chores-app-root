@@ -1,9 +1,14 @@
 {
   "dependencies": {
+    "apple-signin-auth": "^1.7.6",
+    "google-auth-library": "^9.14.1",
+    "joi": "^17.13.3",
     "morgan": "^1.10.0",
-    "node": "^22.7.0"
+    "node": "^22.7.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@types/morgan": "^1.9.9"
+    "@types/morgan": "^1.9.9",
+    "@types/uuid": "^10.0.0"
   }
 }

@@ -77,32 +77,35 @@ The Household Chore Management App will be built using a three-tier architecture
 
 === Database Schema
 
-The database schema for the app is designed to support multi-user households, chore management, and notifications. The following tables are key to the system:
+The database schema for the app is designed to support multi-user households, chore management, notifications, and additional features. The following tables and enums are key to the system:
+
+==== Enums
+
+- **OAuthProvider**: GOOGLE, FACEBOOK, APPLE
+- **UserRole**: ADMIN, MEMBER
+- **HouseholdStatus**: ACTIVE, INACTIVE
+- **ChoreStatus**: PENDING, IN_PROGRESS, COMPLETED
+- **ChoreFrequency**: DAILY, WEEKLY, MONTHLY, CUSTOM
+- **ChorePriority**: LOW, MEDIUM, HIGH
+- **NotificationType**: CHORE_ASSIGNED, CHORE_COMPLETED, CHORE_DUE_SOON, HOUSEHOLD_INVITE
 
 ==== 1. Users Table
-Stores information about each user, including OAuth credentials and associated households.
+Stores information about each user, including OAuth credentials and associated data.
 
 [plantuml]
 ----
 entity "Users" {
   *id : UUID [PK]
   --
-  *email : varchar
+  *email : varchar [unique]
   *name : varchar
-  *oauth_provider : varchar
+  *oauth_provider : OAuthProvider
   *oauth_id : varchar [unique]
+  *role : UserRole
   *created_at : timestamp
   *updated_at : timestamp
 }
 ----
-
-- **id**: Unique identifier for each user.
-- **email**: User's email address.
-- **name**: User's name.
-- **oauth_provider**: The OAuth provider (e.g., Google, Facebook).
-- **oauth_id**: Unique identifier from the OAuth provider.
-- **created_at**: Timestamp when the user account was created.
-- **updated_at**: Timestamp when the user account was last updated.
 
 ==== 2. Households Table
 Tracks households, which are groups of users sharing chores.
@@ -113,32 +116,25 @@ entity "Households" {
   *id : UUID [PK]
   --
   *name : varchar
+  *status : HouseholdStatus
   *created_at : timestamp
+  *updated_at : timestamp
 }
 ----
 
-- **id**: Unique identifier for each household.
-- **name**: Name of the household.
-- **created_at**: Timestamp when the household was created.
-
-==== 3. Household_Members Table
+==== 3. HouseholdMembers Table
 A join table that links users to households.
 
 [plantuml]
 ----
-entity "Household_Members" {
+entity "HouseholdMembers" {
   *user_id : UUID [FK -> Users.id]
   *household_id : UUID [FK -> Households.id]
   --
-  *role : varchar
+  *role : UserRole
   *joined_at : timestamp
 }
 ----
-
-- **user_id**: References the user.
-- **household_id**: References the household.
-- **role**: Defines the user's role within the household (e.g., admin, member).
-- **joined_at**: Timestamp when the user joined the household.
 
 ==== 4. Chores Table
 Stores details about chores within a household.
@@ -150,28 +146,19 @@ entity "Chores" {
   --
   *household_id : UUID [FK -> Households.id]
   *title : varchar
-  *description : text
-  *time_estimate : integer
-  *frequency : varchar
-  *assigned_to : UUID [FK -> Users.id] nullable
-  *status : varchar
+  description : text
+  time_estimate : integer
+  *frequency : ChoreFrequency
+  assigned_to : UUID [FK -> Users.id]
+  *status : ChoreStatus
+  *priority : ChorePriority
   *created_at : timestamp
   *updated_at : timestamp
-  *due_date : date
+  due_date : date
+  last_completed : timestamp
+  template_id : UUID [FK -> ChoreTemplates.id]
 }
 ----
-
-- **id**: Unique identifier for each chore.
-- **household_id**: References the household the chore belongs to.
-- **title**: Title of the chore.
-- **description**: Description of the chore.
-- **time_estimate**: Estimated time to complete the chore (in minutes).
-- **frequency**: Frequency of the chore (e.g., daily, weekly, monthly).
-- **assigned_to**: References the user assigned to the chore (nullable if unassigned).
-- **status**: Status of the chore (e.g., pending, in-progress, completed).
-- **created_at**: Timestamp when the chore was created.
-- **updated_at**: Timestamp when the chore was last updated.
-- **due_date**: The next due date for the chore, based on its frequency.
 
 ==== 5. Notifications Table
 Logs notifications sent to users about chore updates.
@@ -182,19 +169,107 @@ entity "Notifications" {
   *id : UUID [PK]
   --
   *user_id : UUID [FK -> Users.id]
-  *chore_id : UUID [FK -> Chores.id] nullable
-  *type : varchar
-  *message : text
+  chore_id : UUID [FK -> Chores.id]
+  *type : NotificationType
+  message : text
   *sent_at : timestamp
+  *read : boolean
 }
 ----
 
-- **id**: Unique identifier for each notification.
-- **user_id**: References the user receiving the notification.
-- **chore_id**: References the related chore (nullable for general notifications).
-- **type**: Type of notification (e.g., chore assigned, chore completed).
-- **message**: Content of the notification.
-- **sent_at**: Timestamp when the notification was sent.
+==== 6. ChoreTemplates Table
+Stores preset chore templates that can be used to create new chores.
+
+[plantuml]
+----
+entity "ChoreTemplates" {
+  *id : UUID [PK]
+  --
+  *title : varchar
+  description : text
+  time_estimate : integer
+  *frequency : ChoreFrequency
+  *created_at : timestamp
+  *updated_at : timestamp
+}
+----
+
+==== 7. UserPreferences Table
+Stores user-specific preferences for the application.
+
+[plantuml]
+----
+entity "UserPreferences" {
+  *id : UUID [PK]
+  *user_id : UUID [FK -> Users.id]
+  --
+  notification_preferences : json
+  chore_preferences : json
+  theme : varchar
+  *created_at : timestamp
+  *updated_at : timestamp
+}
+----
+
+==== 8. Badges Table
+Represents achievement badges that can be awarded to users.
+
+[plantuml]
+----
+entity "Badges" {
+  *id : UUID [PK]
+  --
+  *name : varchar
+  *description : text
+  *icon_url : varchar
+}
+----
+
+==== 9. CalendarIntegrations Table
+Manages calendar integrations for users.
+
+[plantuml]
+----
+entity "CalendarIntegrations" {
+  *id : UUID [PK]
+  *user_id : UUID [FK -> Users.id]
+  --
+  *provider : varchar
+  *access_token : varchar
+  refresh_token : varchar
+  expires_at : timestamp
+}
+----
+
+==== 10. ChoreActivities Table
+Tracks activity log for chores.
+
+[plantuml]
+----
+entity "ChoreActivities" {
+  *id : UUID [PK]
+  *chore_id : UUID [FK -> Chores.id]
+  *user_id : UUID [FK -> Users.id]
+  --
+  *action : varchar
+  *created_at : timestamp
+}
+----
+
+==== 11. UserBadges Table
+A join table that links users to their earned badges.
+
+[plantuml]
+----
+entity "UserBadges" {
+  *user_id : UUID [FK -> Users.id]
+  *badge_id : UUID [FK -> Badges.id]
+  --
+  *awarded_at : timestamp
+}
+----
+
+This schema reflects the current structure defined in the `schema.prisma` file, including all models, their fields, and relationships. The use of UUIDs for primary keys and the inclusion of timestamp fields for creation and updates are maintained throughout.
 
 === Docker Network Configuration
 
@@ -368,187 +443,244 @@ Handles the badge system for user engagement.
 
 === API Design
 
-The APIs will follow RESTful principles, ensuring that each endpoint is intuitive and stateless. Here's a breakdown of the key API endpoints:
+The APIs follow RESTful principles, ensuring that each endpoint is intuitive and stateless. Here's a breakdown of the key API endpoints:
 
-## Authentication API
+==== Authentication API
 
-### POST /auth/login
-- Initiates the OAuth login process.
-- Request: `{ "provider": "GOOGLE" | "FACEBOOK" | "APPLE" }`
-- Response: `{ "redirect_url": "url_to_oauth_provider" }`
-- Errors: `{ "error": "Invalid provider" }`
+===== POST /api/auth/login
+Initiates the OAuth login process.
 
-### POST /auth/callback
-- Handles the callback from the OAuth provider.
-- Request: `{ "code": "oauth_code_from_provider" }`
-- Response: `{ "token": "jwt_token", "user": { "id": "string", "email": "string", "name": "string" } }`
-- Errors: `{ "error": "Invalid OAuth code" }`
+- Request: { "provider": "GOOGLE" | "FACEBOOK" | "APPLE" }
+- Response: { "redirect_url": "url_to_oauth_provider" }
+- Errors: { "error": "Invalid provider" }
 
-### GET /auth/user
-- Retrieves the currently authenticated user's details.
-- Response: `{ "id": "string", "email": "string", "name": "string", "households": [{ "id": "string", "name": "string" }] }`
-- Errors: `{ "error": "Unauthorized" }`
+===== GET /api/auth/callback/:provider
+Handles the callback from the OAuth provider.
 
-### POST /auth/logout
-- Logs out the user by invalidating the session.
-- Response: `{ "message": "Logged out successfully" }`
-- Errors: `{ "error": "Unauthorized" }`
+- Response: { "token": "jwt_token", "user": { "id": "string", "email": "string", "name": "string" } }
+- Errors: { "error": "Invalid OAuth code" }
 
-## Household Management API
+===== POST /api/auth/logout
+Logs out the user by invalidating the session.
 
-### POST /households
-- Creates a new household.
-- Request: `{ "name": "string" }`
-- Response: `{ "id": "string", "name": "string", "created_at": "timestamp", "status": "ACTIVE" | "INACTIVE" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "message": "Logged out successfully" }
+- Errors: { "error": "Unauthorized" }
 
-### GET /households
-- Retrieves all households the user is a member of.
-- Response: `[{ "id": "string", "name": "string", "members": [{ "id": "string", "name": "string", "role": "string" }], "status": "ACTIVE" | "INACTIVE" }]`
-- Errors: `{ "error": "Unauthorized" }`
+===== GET /api/auth/user
+Retrieves the currently authenticated user's information.
+
+- Response: { "id": "string", "email": "string", "name": "string" }
+- Errors: { "error": "Unauthorized" }
+
+==== Household Management API
+
+===== POST /api/households
+Creates a new household.
+
+- Request: { "name": "string" }
+- Response: { "id": "string", "name": "string", "created_at": "timestamp", "status": "ACTIVE" | "INACTIVE" }
+- Errors: { "error": "Validation error" }
+
+===== GET /api/households
+Retrieves all households the user is a member of.
+
+- Response: [{ "id": "string", "name": "string", "members": [{ "id": "string", "name": "string", "role": "string" }], "status": "ACTIVE" | "INACTIVE" }]
+- Errors: { "error": "Unauthorized" }
 - Supports: Pagination, filtering, sorting
 
-### POST /households/{household_id}/members
-- Adds a new member to the household.
-- Request: `{ "email": "string", "role": "ADMIN" | "MEMBER" }`
-- Response: `{ "message": "Invitation sent" }`
-- Errors: `{ "error": "Validation error" }`
+===== POST /api/households/{household_id}/members
+Adds a new member to the household.
 
-### DELETE /households/{household_id}/members/{user_id}
-- Removes a member from the household.
-- Response: `{ "message": "Member removed" }`
-- Errors: `{ "error": "Unauthorized" }`
+- Request: { "email": "string", "role": "ADMIN" | "MEMBER" }
+- Response: { "message": "Invitation sent" }
+- Errors: { "error": "Validation error" }
 
-## Chore Management API
+===== DELETE /api/households/{household_id}/members/{user_id}
+Removes a member from the household.
 
-### POST /households/{household_id}/chores
-- Creates a new chore within a household.
-- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "priority": "LOW" | "MEDIUM" | "HIGH" }`
-- Response: `{ "id": "string", "title": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "message": "Member removed" }
+- Errors: { "error": "Unauthorized" }
 
-### GET /households/{household_id}/chores
-- Retrieves all chores for a household.
-- Response: `[{ "id": "string", "title": "string", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }]`
-- Errors: `{ "error": "Unauthorized" }`
+==== Chore Management API
+
+===== POST /api/households/{household_id}/chores
+Creates a new chore within a household.
+
+- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "priority": "LOW" | "MEDIUM" | "HIGH" }
+- Response: { "id": "string", "title": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }
+- Errors: { "error": "Validation error" }
+
+===== GET /api/households/{household_id}/chores
+Retrieves all chores for a household.
+
+- Response: [{ "id": "string", "title": "string", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }]
+- Errors: { "error": "Unauthorized" }
 - Supports: Pagination, filtering, sorting
 
-### GET /chores/{chore_id}
-- Retrieves detailed information about a specific chore.
-- Response: `{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH", "activity_log": [{ "action": "string", "timestamp": "timestamp" }] }`
-- Errors: `{ "error": "Not found" }`
+===== GET /api/chores/{chore_id}
+Retrieves detailed information about a specific chore.
 
-### PUT /chores/{chore_id}
-- Updates a specific chore's details.
-- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "priority": "LOW" | "MEDIUM" | "HIGH" }`
-- Response: `{ "message": "Chore updated" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH", "activities": [{ "action": "string", "created_at": "timestamp" }] }
+- Errors: { "error": "Not found" }
 
-### DELETE /chores/{chore_id}
-- Deletes a specific chore.
-- Response: `{ "message": "Chore deleted" }`
-- Errors: `{ "error": "Unauthorized" }`
+===== PUT /api/chores/{chore_id}
+Updates a specific chore's details.
 
-## Notifications API
+- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "priority": "LOW" | "MEDIUM" | "HIGH" }
+- Response: { "message": "Chore updated" }
+- Errors: { "error": "Validation error" }
 
-### GET /notifications
-- Retrieves all notifications for the user.
-- Response: `[{ "id": "string", "type": "CHORE_ASSIGNED" | "CHORE_COMPLETED" | "CHORE_DUE_SOON" | "HOUSEHOLD_INVITE", "message": "string", "sent_at": "timestamp", "chore_id": "string" }]`
-- Errors: `{ "error": "Unauthorized" }`
+===== DELETE /api/chores/{chore_id}
+Deletes a specific chore.
+
+- Response: { "message": "Chore deleted successfully" }
+- Errors: { "error": "Unauthorized" }
+
+===== POST /api/chores/{chore_id}/complete
+Marks a chore as completed.
+
+- Response: { "message": "Chore completed successfully" }
+- Errors: { "error": "Unauthorized" }
+
+==== Notifications API
+
+===== GET /api/notifications
+Retrieves all notifications for the user.
+
+- Response: [{ "id": "string", "type": "CHORE_ASSIGNED" | "CHORE_COMPLETED" | "CHORE_DUE_SOON" | "HOUSEHOLD_INVITE", "message": "string", "sent_at": "timestamp", "chore_id": "string" }]
+- Errors: { "error": "Unauthorized" }
 - Supports: Pagination, filtering, sorting
 
-### POST /notifications/mark-as-read
-- Marks notifications as read.
-- Request: `{ "notification_ids": ["string"] }`
-- Response: `{ "message": "Notifications marked as read" }`
-- Errors: `{ "error": "Validation error" }`
+===== PUT /api/notifications/{notification_id}/read
+Marks a notification as read.
 
-### POST /notifications
-- Sends a new notification to users.
-- Request: `{ "user_id": "string", "type": "CHORE_ASSIGNED" | "CHORE_COMPLETED" | "CHORE_DUE_SOON" | "HOUSEHOLD_INVITE", "message": "string", "chore_id": "string" }`
-- Response: `{ "message": "Notification sent" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "message": "Notification marked as read" }
+- Errors: { "error": "Validation error" }
 
-## Chore Templates API
+===== DELETE /api/notifications/{notification_id}
+Deletes a specific notification.
 
-### POST /chore-templates
-- Creates a new chore template.
-- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }`
-- Response: `{ "id": "string", "title": "string", "created_at": "timestamp" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "message": "Notification deleted" }
+- Errors: { "error": "Unauthorized" }
 
-### GET /chore-templates
-- Retrieves all chore templates.
-- Response: `[{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }]`
-- Errors: `{ "error": "Unauthorized" }`
+===== PUT /api/notifications/preferences
+Updates the user's notification preferences.
+
+- Request: { "notification_preferences": { "email_notifications": boolean, "push_notifications": boolean, "chore_reminders": boolean, "household_updates": boolean } }
+- Response: { "message": "Notification preferences updated" }
+- Errors: { "error": "Validation error" }
+
+==== Chore Templates API
+
+===== POST /api/chore-templates
+Creates a new chore template.
+
+- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }
+- Response: { "id": "string", "title": "string", "created_at": "timestamp" }
+- Errors: { "error": "Validation error" }
+
+===== GET /api/chore-templates
+Retrieves all chore templates.
+
+- Response: [{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }]
+- Errors: { "error": "Unauthorized" }
 - Supports: Pagination, filtering, sorting
 
-### GET /chore-templates/{template_id}
-- Retrieves detailed information about a specific chore template.
-- Response: `{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }`
-- Errors: `{ "error": "Not found" }`
+===== GET /api/chore-templates/{template_id}
+Retrieves detailed information about a specific chore template.
 
-### PUT /chore-templates/{template_id}
-- Updates a specific chore template's details.
-- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }`
-- Response: `{ "message": "Chore template updated" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }
+- Errors: { "error": "Not found" }
 
-### DELETE /chore-templates/{template_id}
-- Deletes a specific chore template.
-- Response: `{ "message": "Chore template deleted" }`
-- Errors: `{ "error": "Unauthorized" }`
+===== PUT /api/chore-templates/{template_id}
+Updates a specific chore template's details.
 
-## User Preferences API
+- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }
+- Response: { "message": "Chore template updated" }
+- Errors: { "error": "Validation error" }
 
-### GET /user/preferences
-- Retrieves the user's preferences.
-- Response: `{ "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }`
-- Errors: `{ "error": "Unauthorized" }`
+===== DELETE /api/chore-templates/{template_id}
+Deletes a specific chore template.
 
-### PUT /user/preferences
-- Updates the user's preferences.
-- Request: `{ "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }`
-- Response: `{ "message": "Preferences updated" }`
-- Errors: `{ "error": "Validation error" }`
+- Response: { "message": "Chore template deleted successfully" }
+- Errors: { "error": "Unauthorized" }
 
-## Calendar Integration API
+==== User Management API
 
-### POST /user/calendar-integration
-- Adds a new calendar integration for the user.
-- Request: `{ "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }`
-- Response: `{ "message": "Calendar integration added" }`
-- Errors: `{ "error": "Validation error" }`
+===== GET /api/users/profile
+Retrieves the user's profile information.
 
-### GET /user/calendar-integration
-- Retrieves the user's calendar integration details.
-- Response: `{ "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }`
-- Errors: `{ "error": "Unauthorized" }`
+- Response: { "id": "string", "name": "string", "email": "string", "oauth_provider": "string", "role": "string", "created_at": "timestamp", "updated_at": "timestamp" }
+- Errors: { "error": "Unauthorized" }
 
-### DELETE /user/calendar-integration
-- Removes the user's calendar integration.
-- Response: `{ "message": "Calendar integration removed" }`
-- Errors: `{ "error": "Unauthorized" }`
+===== PUT /api/users/profile
+Updates the user's profile information.
 
-## Badges API
+- Request: { "name": "string" }
+- Response: { "id": "string", "name": "string", "email": "string", "oauth_provider": "string", "role": "string", "created_at": "timestamp", "updated_at": "timestamp" }
+- Errors: { "error": "Validation error" }
 
-### GET /user/badges
-- Retrieves the user's badges.
-- Response: `[{ "id": "string", "name": "string", "description": "string", "icon_url": "string" }]`
-- Errors: `{ "error": "Unauthorized" }`
+===== GET /api/users/preferences
+Retrieves the user's preferences.
 
-## Chore Activity API
+- Response: { "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }
+- Errors: { "error": "Unauthorized" }
 
-### GET /chores/{chore_id}/activity
-- Retrieves the activity log for a specific chore.
-- Response: `[{ "id": "string", "user_id": "string", "action": "string", "timestamp": "timestamp" }]`
-- Errors: `{ "error": "Unauthorized" }`
+===== PUT /api/users/preferences
+Updates the user's preferences.
 
-### POST /chores/{chore_id}/activity
-- Adds a new activity entry for a specific chore.
-- Request: `{ "user_id": "string", "action": "string" }`
-- Response: `{ "message": "Activity added" }`
-- Errors: `{ "error": "Validation error" }`
+- Request: { "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }
+- Response: { "message": "Preferences updated" }
+- Errors: { "error": "Validation error" }
+
+===== GET /api/users/badges
+Retrieves the user's earned badges.
+
+- Response: [{ "id": "string", "name": "string", "description": "string", "icon_url": "string" }]
+- Errors: { "error": "Unauthorized" }
+
+==== Calendar Integration API
+
+===== POST /api/calendar-integration
+Adds a new calendar integration for the user.
+
+- Request: { "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }
+- Response: { "message": "Calendar integration added" }
+- Errors: { "error": "Validation error" }
+
+===== GET /api/calendar-integration
+Retrieves the user's calendar integration details.
+
+- Response: { "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }
+- Errors: { "error": "Unauthorized" }
+
+===== DELETE /api/calendar-integration
+Removes the user's calendar integration.
+
+- Response: { "message": "Calendar integration removed" }
+- Errors: { "error": "Unauthorized" }
+
+===== POST /api/calendar-integration/sync
+Syncs the user's chores with their connected calendar.
+
+- Response: { "message": "Chores synced successfully" }
+- Errors: { "error": "Internal server error" }
+
+==== Badges API
+
+===== GET /api/badges
+Retrieves all available badges.
+
+- Response: [{ "id": "string", "name": "string", "description": "string", "icon_url": "string" }]
+- Errors: { "error": "Unauthorized" }
+
+===== POST /api/badges/award
+Awards a badge to a user.
+
+- Request: { "user_id": "string", "badge_id": "string" }
+- Response: { "message": "Badge awarded successfully" }
+- Errors: { "error": "Validation error" }
+
 
 == Implementation
 
@@ -676,3 +808,4 @@ The APIs will follow RESTful principles, ensuring that each endpoint is intuitiv
 - Conduct user testing to gather feedback on the core features.
 - Monitor the app's performance and reliability in production.
 - Review user feedback for potential improvements and future updates.
+
