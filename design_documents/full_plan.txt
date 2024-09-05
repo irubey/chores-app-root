@@ -14,24 +14,33 @@ This project will be implemented as both a mobile and web application. Given the
 The app will include the following features, prioritized using the MoSCoW method:
 
 *Must Have:*
-- Ability for multiple users (roommates) to access the same household account.
+- Collaborative household setup with one roommate initiating and inviting others.
 - Chore checklist with time estimates for completion.
 - Ability to assign chores to specific household members.
 - Notifications to alert users of pending or completed chores.
 - Chore refresh rates (e.g., daily, weekly, monthly).
 - OAuth-based user authentication for secure login and data synchronization.
+- Preset chore templates that can be customized.
+- Preference-based chore distribution.
+- Weekly chore distribution based on time estimates and preferences.
+- Visual aids (like pie charts) to show chore distribution.
+- Calendar integration with Google and Apple calendars.
 
 *Should Have:*
 - Ability to divide chores based on estimated time and frequency.
 - Mobile app developed using React Native for cross-platform consistency.
 - Web app using React and Next.js for fast, SEO-friendly pages.
+- Optional recording of miscellaneous tasks (<5 minutes).
+- Time tracking for actual time taken on tasks.
+- Weekly feedback system for chore distribution optimization.
 
 *Could Have:*
 - Custom notifications based on user preferences.
 - A dashboard that shows chore completion statistics.
+- Badge system for user engagement (e.g., "Good Roommate" or "Task Master").
 
 *Won't Have:*
-- Advanced gamification features (e.g., rewards or points systems).
+- Advanced gamification features (e.g., competitive leaderboards or points systems).
 - Integration with third-party home automation systems (e.g., smart speakers).
 
 == Method
@@ -187,6 +196,65 @@ entity "Notifications" {
 - **message**: Content of the notification.
 - **sent_at**: Timestamp when the notification was sent.
 
+=== Docker Network Configuration
+
+The application uses Docker for containerization and Docker Compose for orchestrating the multi-container setup. Here's an overview of the Docker network configuration:
+
+==== Services
+
+1. **Backend Service**:
+   - Built from `./backend` directory
+   - Exposed on port 3000
+   - Depends on the database service
+   - Uses a health check to ensure the service is ready
+
+2. **Frontend Service**:
+   - Built from `./frontend` directory
+   - Exposed on port 3001 (mapped to internal port 3000)
+   - Depends on the backend service
+
+3. **Database Service (PostgreSQL)**:
+   - Uses PostgreSQL 16.4 image
+   - Exposed on port 5432
+   - Uses a volume for data persistence
+   - Includes a health check for readiness
+
+4. **Prisma Service**:
+   - Built from `./backend` directory
+   - Runs Prisma migrations
+   - Depends on the database service
+
+==== Network Configuration
+
+While not explicitly defined, Docker Compose creates a default network for the application. All services are connected to this network, allowing them to communicate with each other using their service names as hostnames.
+
+==== Volumes
+
+- A named volume `pgdata` is used for persisting PostgreSQL data.
+
+==== Environment Variables
+
+- Environment variables are managed using `.env` files:
+  - `./backend/.env` for the backend and Prisma services
+  - `.env` in the root directory for the frontend and database services
+
+==== Health Checks
+
+- The backend and database services include health checks to ensure they are ready before dependent services start.
+
+==== Docker Ignore
+
+A `.dockerignore` file is used to exclude unnecessary files from the Docker build context, improving build performance and reducing image size.
+
+==== Dockerfiles
+
+Both the backend and frontend services use multi-stage builds in their Dockerfiles:
+
+1. Build stage: Installs dependencies and builds the application
+2. Runtime stage: Copies only necessary files from the build stage, resulting in a smaller final image
+
+This configuration ensures that the application components are properly isolated, can communicate effectively, and are optimized for both development and production environments.
+
 === Component Design 
 
 ==== 1. Authentication Components
@@ -210,19 +278,25 @@ The central hub where users can view and manage their household and chores.
 - **Chore Summary**
   - Displays a list of all chores, categorized by status (e.g., pending, in-progress, completed).
   - Includes filters to view chores by frequency (daily, weekly, monthly) or assigned user.
+  - Visual representation (e.g., pie chart) of chore distribution among roommates.
 
 - **Chore Assignment**
   - Interface for assigning chores to household members.
   - Displays a list of users in the household with options to assign or reassign chores.
   - Shows the estimated time and frequency of each chore.
+  - Allows users to schedule their own chores and request task swaps or coverage.
 
 - **Chore Creation**
   - Modal or form component for creating new chores.
   - Includes fields for the title, description, time estimate, frequency, and assignment.
+  - Option to use preset templates or create custom chores.
 
 - **Notification Center**
   - Displays recent notifications about chore updates (e.g., completed chores, new assignments).
   - Allows users to mark notifications as read or dismiss them.
+
+  - **Miscellaneous Task Tracker**
+  - Interface for logging quick tasks (<5 minutes) performed by users.
 
 ==== 3. Chore Detail Component
 Provides detailed information about a specific chore.
@@ -268,176 +342,285 @@ Provides access to app-wide settings and preferences.
 - **Chore Scheduling Preferences**
   - Allows users to customize the refresh rates and reminders for different types of chores (e.g., receive reminders one day before due).
 
+==== 7. Preference Management Component
+Handles user preferences for chore distribution and task management.
+
+- **Chore Preferences**
+  - Allows users to specify preferences (e.g., small tasks frequently vs. large tasks occasionally).
+  - Interface for users to indicate task dislikes or preferences.
+
+- **Time Estimate Feedback**
+  - Allows users to provide feedback on actual time taken for tasks compared to estimates.
+
+==== 8. Calendar Integration Component
+Manages the integration with external calendar services.
+
+- **Calendar Sync**
+  - Interface for connecting and syncing with Google and Apple calendars.
+  - Options for setting reminders and scheduling chores directly into personal calendars.
+
+==== 9. Gamification Component
+Handles the badge system for user engagement.
+
+- **Badge Display**
+  - Shows earned badges like "Good Roommate" or "Task Master".
+  - Provides information on how to earn different badges.
+
 === API Design
 
 The APIs will follow RESTful principles, ensuring that each endpoint is intuitive and stateless. Here's a breakdown of the key API endpoints:
 
-==== 1. Authentication API
-Handles user authentication via OAuth and session management.
+## Authentication API
 
-- **POST /auth/login**
-  - Initiates the OAuth login process.
-  - Request: `{ provider: "google" | "facebook" | "apple" }`
-  - Response: Redirects to the OAuth provider's login page.
+### POST /auth/login
+- Initiates the OAuth login process.
+- Request: `{ "provider": "GOOGLE" | "FACEBOOK" | "APPLE" }`
+- Response: `{ "redirect_url": "url_to_oauth_provider" }`
+- Errors: `{ "error": "Invalid provider" }`
 
-- **POST /auth/callback**
-  - Handles the callback from the OAuth provider.
-  - Request: `{ code: "oauth_code_from_provider" }`
-  - Response: `{ token: "jwt_token" }`
-  - Description: Exchanges the OAuth code for a JWT token.
+### POST /auth/callback
+- Handles the callback from the OAuth provider.
+- Request: `{ "code": "oauth_code_from_provider" }`
+- Response: `{ "token": "jwt_token", "user": { "id": "string", "email": "string", "name": "string" } }`
+- Errors: `{ "error": "Invalid OAuth code" }`
 
-- **GET /auth/user**
-  - Retrieves the currently authenticated user's details.
-  - Response: `{ id, email, name, households[] }`
-  - Description: Uses the JWT token to authenticate and return user information.
+### GET /auth/user
+- Retrieves the currently authenticated user's details.
+- Response: `{ "id": "string", "email": "string", "name": "string", "households": [{ "id": "string", "name": "string" }] }`
+- Errors: `{ "error": "Unauthorized" }`
 
-- **POST /auth/logout**
-  - Logs out the user by invalidating the session.
-  - Response: `{ message: "Logged out successfully" }`
+### POST /auth/logout
+- Logs out the user by invalidating the session.
+- Response: `{ "message": "Logged out successfully" }`
+- Errors: `{ "error": "Unauthorized" }`
 
-==== 2. Household Management API
-Manages household creation, membership, and details.
+## Household Management API
 
-- **POST /households**
-  - Creates a new household.
-  - Request: `{ name: "Household Name" }`
-  - Response: `{ id, name, created_at }`
-  - Description: Creates a new household and associates it with the current user.
+### POST /households
+- Creates a new household.
+- Request: `{ "name": "string" }`
+- Response: `{ "id": "string", "name": "string", "created_at": "timestamp", "status": "ACTIVE" | "INACTIVE" }`
+- Errors: `{ "error": "Validation error" }`
 
-- **GET /households**
-  - Retrieves all households the user is a member of.
-  - Response: `[{ id, name, members[] }]`
-  - Description: Returns a list of households with member details.
+### GET /households
+- Retrieves all households the user is a member of.
+- Response: `[{ "id": "string", "name": "string", "members": [{ "id": "string", "name": "string", "role": "string" }], "status": "ACTIVE" | "INACTIVE" }]`
+- Errors: `{ "error": "Unauthorized" }`
+- Supports: Pagination, filtering, sorting
 
-- **POST /households/{household_id}/members**
-  - Adds a new member to the household.
-  - Request: `{ email, role }`
-  - Response: `{ message: "Invitation sent" }`
-  - Description: Sends an invitation to join the household.
+### POST /households/{household_id}/members
+- Adds a new member to the household.
+- Request: `{ "email": "string", "role": "ADMIN" | "MEMBER" }`
+- Response: `{ "message": "Invitation sent" }`
+- Errors: `{ "error": "Validation error" }`
 
-- **DELETE /households/{household_id}/members/{user_id}**
-  - Removes a member from the household.
-  - Response: `{ message: "Member removed" }`
-  - Description: Removes the user from the specified household.
+### DELETE /households/{household_id}/members/{user_id}
+- Removes a member from the household.
+- Response: `{ "message": "Member removed" }`
+- Errors: `{ "error": "Unauthorized" }`
 
-==== 3. Chore Management API
-Handles CRUD operations for chores within a household.
+## Chore Management API
 
-- **POST /households/{household_id}/chores**
-  - Creates a new chore within a household.
-  - Request: `{ title, description, time_estimate, frequency, assigned_to }`
-  - Response: `{ id, title, status, due_date }`
-  - Description: Adds a new chore and assigns it within the household.
+### POST /households/{household_id}/chores
+- Creates a new chore within a household.
+- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "priority": "LOW" | "MEDIUM" | "HIGH" }`
+- Response: `{ "id": "string", "title": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }`
+- Errors: `{ "error": "Validation error" }`
 
-- **GET /households/{household_id}/chores**
-  - Retrieves all chores for a household.
-  - Response: `[{ id, title, assigned_to, status, due_date }]`
-  - Description: Returns a list of chores, optionally filtered by status or frequency.
+### GET /households/{household_id}/chores
+- Retrieves all chores for a household.
+- Response: `[{ "id": "string", "title": "string", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH" }]`
+- Errors: `{ "error": "Unauthorized" }`
+- Supports: Pagination, filtering, sorting
 
-- **GET /chores/{chore_id}**
-  - Retrieves detailed information about a specific chore.
-  - Response: `{ id, title, description, time_estimate, assigned_to, status, due_date, activity_log[] }`
-  - Description: Returns detailed information, including the activity log.
+### GET /chores/{chore_id}
+- Retrieves detailed information about a specific chore.
+- Response: `{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "due_date": "timestamp", "priority": "LOW" | "MEDIUM" | "HIGH", "activity_log": [{ "action": "string", "timestamp": "timestamp" }] }`
+- Errors: `{ "error": "Not found" }`
 
-- **PUT /chores/{chore_id}**
-  - Updates a specific chore's details.
-  - Request: `{ title, description, time_estimate, frequency, assigned_to, status }`
-  - Response: `{ message: "Chore updated" }`
-  - Description: Modifies the chore's attributes or reassigns it.
+### PUT /chores/{chore_id}
+- Updates a specific chore's details.
+- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "assigned_to": "string", "status": "PENDING" | "IN_PROGRESS" | "COMPLETED", "priority": "LOW" | "MEDIUM" | "HIGH" }`
+- Response: `{ "message": "Chore updated" }`
+- Errors: `{ "error": "Validation error" }`
 
-- **DELETE /chores/{chore_id}**
-  - Deletes a specific chore.
-  - Response: `{ message: "Chore deleted" }`
-  - Description: Removes the chore from the household.
+### DELETE /chores/{chore_id}
+- Deletes a specific chore.
+- Response: `{ "message": "Chore deleted" }`
+- Errors: `{ "error": "Unauthorized" }`
 
-==== 4. Notifications API
-Manages notifications related to chores and household activities.
+## Notifications API
 
-- **GET /notifications**
-  - Retrieves all notifications for the user.
-  - Response: `[{ id, type, message, sent_at, chore_id }]`
-  - Description: Returns a list of notifications, optionally filtered by type.
+### GET /notifications
+- Retrieves all notifications for the user.
+- Response: `[{ "id": "string", "type": "CHORE_ASSIGNED" | "CHORE_COMPLETED" | "CHORE_DUE_SOON" | "HOUSEHOLD_INVITE", "message": "string", "sent_at": "timestamp", "chore_id": "string" }]`
+- Errors: `{ "error": "Unauthorized" }`
+- Supports: Pagination, filtering, sorting
 
-- **POST /notifications/mark-as-read**
-  - Marks notifications as read.
-  - Request: `{ notification_ids[] }`
-  - Response: `{ message: "Notifications marked as read" }`
-  - Description: Updates the status of notifications to read.
+### POST /notifications/mark-as-read
+- Marks notifications as read.
+- Request: `{ "notification_ids": ["string"] }`
+- Response: `{ "message": "Notifications marked as read" }`
+- Errors: `{ "error": "Validation error" }`
 
-- **POST /notifications**
-  - Sends a new notification to users.
-  - Request: `{ user_id, type, message, chore_id }`
-  - Response: `{ message: "Notification sent" }`
-  - Description: Sends a notification, typically used by the system to alert users of chore updates.
+### POST /notifications
+- Sends a new notification to users.
+- Request: `{ "user_id": "string", "type": "CHORE_ASSIGNED" | "CHORE_COMPLETED" | "CHORE_DUE_SOON" | "HOUSEHOLD_INVITE", "message": "string", "chore_id": "string" }`
+- Response: `{ "message": "Notification sent" }`
+- Errors: `{ "error": "Validation error" }`
+
+## Chore Templates API
+
+### POST /chore-templates
+- Creates a new chore template.
+- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }`
+- Response: `{ "id": "string", "title": "string", "created_at": "timestamp" }`
+- Errors: `{ "error": "Validation error" }`
+
+### GET /chore-templates
+- Retrieves all chore templates.
+- Response: `[{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }]`
+- Errors: `{ "error": "Unauthorized" }`
+- Supports: Pagination, filtering, sorting
+
+### GET /chore-templates/{template_id}
+- Retrieves detailed information about a specific chore template.
+- Response: `{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }`
+- Errors: `{ "error": "Not found" }`
+
+### PUT /chore-templates/{template_id}
+- Updates a specific chore template's details.
+- Request: `{ "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }`
+- Response: `{ "message": "Chore template updated" }`
+- Errors: `{ "error": "Validation error" }`
+
+### DELETE /chore-templates/{template_id}
+- Deletes a specific chore template.
+- Response: `{ "message": "Chore template deleted" }`
+- Errors: `{ "error": "Unauthorized" }`
+
+## User Preferences API
+
+### GET /user/preferences
+- Retrieves the user's preferences.
+- Response: `{ "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }`
+- Errors: `{ "error": "Unauthorized" }`
+
+### PUT /user/preferences
+- Updates the user's preferences.
+- Request: `{ "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }`
+- Response: `{ "message": "Preferences updated" }`
+- Errors: `{ "error": "Validation error" }`
+
+## Calendar Integration API
+
+### POST /user/calendar-integration
+- Adds a new calendar integration for the user.
+- Request: `{ "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }`
+- Response: `{ "message": "Calendar integration added" }`
+- Errors: `{ "error": "Validation error" }`
+
+### GET /user/calendar-integration
+- Retrieves the user's calendar integration details.
+- Response: `{ "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }`
+- Errors: `{ "error": "Unauthorized" }`
+
+### DELETE /user/calendar-integration
+- Removes the user's calendar integration.
+- Response: `{ "message": "Calendar integration removed" }`
+- Errors: `{ "error": "Unauthorized" }`
+
+## Badges API
+
+### GET /user/badges
+- Retrieves the user's badges.
+- Response: `[{ "id": "string", "name": "string", "description": "string", "icon_url": "string" }]`
+- Errors: `{ "error": "Unauthorized" }`
+
+## Chore Activity API
+
+### GET /chores/{chore_id}/activity
+- Retrieves the activity log for a specific chore.
+- Response: `[{ "id": "string", "user_id": "string", "action": "string", "timestamp": "timestamp" }]`
+- Errors: `{ "error": "Unauthorized" }`
+
+### POST /chores/{chore_id}/activity
+- Adds a new activity entry for a specific chore.
+- Request: `{ "user_id": "string", "action": "string" }`
+- Response: `{ "message": "Activity added" }`
+- Errors: `{ "error": "Validation error" }`
 
 == Implementation
 
 === Phase 1: Project Setup and Initial Development
 
 - **Task 1.1: Set Up Project Repositories**
-  - Create separate repositories for the backend, frontend, and mobile.
-  - Set up version control - GitHub - and configure continuous integration - GitHub Actions - for automated testing.
+  - Create separate repositories for the backend and frontend.
+  - Set up version control (GitHub) and configure continuous integration (GitHub Actions) for automated testing.
 
 - **Task 1.2: Configure Docker Environment**
   - Create Dockerfiles for the backend and frontend services.
-  - Use Docker Compose to manage the multi-container setup, ensuring volume mounting for local development, as well as configuring the database service.
-  - Configure environment variables and secrets for OAuth and database connections.
+  - Create a `docker-compose.yml` file to orchestrate the multi-container setup.
+  - Configure environment variables and secrets for OAuth, database connections, and Prisma.
 
-- **Task 1.3: Set Up Backend with Node.js and Express**
+- **Task 1.3: Set Up Backend with Node.js, Express, and Prisma**
   - Initialize the Node.js project and set up Express for the API server.
+  - Install and configure Prisma ORM.
+  - Create the Prisma schema based on the database design.
   - Implement basic middleware for logging, error handling, and JSON parsing.
-  - Set up PostgreSQL connection using Docker, and initialize the database with the schema defined.
+  - Set up PostgreSQL connection using Docker, and initialize the database with Prisma migrations.
 
 - **Task 1.4: Set Up Frontend with React and Next.js**
   - Initialize the Next.js project for the web application.
   - Set up routing and basic page structure (e.g., Login Page, Dashboard).
-  - Integrate OAuth login with the frontend, handling user sessions within Docker containers.
+  - Configure the frontend to communicate with the Dockerized backend.
 
 - **Task 1.5: Set Up React Native for Mobile Development**
   - Initialize the React Native project.
   - Set up basic navigation and screen structure.
-  - Integrate OAuth login within the mobile app, and use Docker for consistent backend integration during development.
+  - Configure the mobile app to communicate with the Dockerized backend.
 
 === Phase 2: Core Features Development
 
 - **Task 2.1: Implement Household Management**
-  - Backend: Develop endpoints for creating households, managing members, and retrieving household details.
+  - Backend: Develop Prisma models and API endpoints for creating households, managing members, and retrieving household details.
   - Frontend: Create components for household creation, member management, and household switching.
-  - Mobile: Implement the household management UI, with real-time updates handled via the backend.
+  - Mobile: Implement the household management UI, ensuring it works with the Dockerized backend.
 
 - **Task 2.2: Develop Chore Management**
-  - Backend: Implement CRUD operations for chores, including assigning chores to users and managing chore statuses.
+  - Backend: Implement Prisma models and CRUD operations for chores, including assigning chores to users and managing chore statuses.
   - Frontend: Build the chore summary, creation, assignment, and detail view components.
-  - Mobile: Implement chore management screens, ensuring synchronization with the backend via Docker.
+  - Mobile: Implement chore management screens, ensuring synchronization with the Dockerized backend.
 
 - **Task 2.3: Implement Notifications**
-  - Backend: Develop endpoints for sending, retrieving, and managing notifications.
+  - Backend: Develop Prisma models and API endpoints for sending, retrieving, and managing notifications.
   - Frontend: Create the notification center and integrate real-time updates using WebSockets or polling.
-  - Mobile: Implement push notifications and the notification center.
+  - Mobile: Implement push notifications and the notification center, ensuring compatibility with the Dockerized backend.
 
 === Phase 3: Testing and Refinement
 
 - **Task 3.1: Unit and Integration Testing**
-  - Write unit tests for all backend API endpoints using a testing framework like Jest or Mocha.
+  - Write unit tests for all backend API endpoints using Jest, ensuring they work with the Prisma ORM.
   - Perform integration testing to ensure the frontend and backend work seamlessly together within the Docker environment.
 
 - **Task 3.2: End-to-End Testing**
-  - Use tools like Cypress for end-to-end testing of the web application.
+  - Use tools like Cypress for end-to-end testing of the web application, running tests against the Dockerized environment.
   - Perform manual testing on mobile devices to ensure a smooth user experience across platforms.
 
 - **Task 3.3: Performance Optimization**
-  - Optimize database queries and add indexing where necessary.
+  - Optimize Prisma queries and add indexing where necessary.
   - Implement frontend optimizations like lazy loading and code splitting in Next.js.
+  - Fine-tune Docker configurations for improved performance.
 
 === Phase 4: Deployment and Launch
 
 - **Task 4.1: Prepare for Production Deployment**
-  - Set up production environments for both the backend and frontend (e.g., AWS, Vercel).
-  - Use Docker for containerized deployments, ensuring environment parity with the development setup.
-  - Configure environment variables for OAuth credentials and database connections.
+  - Set up production environments for both the backend and frontend (e.g., AWS ECS, Vercel).
+  - Create production-ready Docker images with multi-stage builds.
+  - Configure environment variables for OAuth credentials, database connections, and Prisma.
 
 - **Task 4.2: Deploy Web Application**
-  - Deploy the Next.js web app to a hosting service like Vercel.
+  - Deploy the Next.js web app to a hosting service like Vercel or AWS ECS using Docker.
   - Set up DNS and SSL for a custom domain.
 
 - **Task 4.3: Deploy Mobile Application**
@@ -445,28 +628,47 @@ Manages notifications related to chores and household activities.
   - Publish the app on the Apple App Store and Google Play Store.
 
 - **Task 4.4: Monitor and Maintenance**
-  - Set up monitoring and logging for both the backend and frontend.
+  - Set up monitoring and logging for both the backend and frontend, leveraging Docker's built-in logging capabilities.
   - Prepare for regular updates and bug fixes based on user feedback.
+  - Implement a CI/CD pipeline for automated testing and deployment of Docker images.
 
 == Milestones
 
 === Milestone 1: Initial Setup (2 Weeks)
 - Complete the project setup with Docker, including repositories and initial configurations.
 - Set up the basic backend and frontend structure with Docker for local development.
+- Initialize the Prisma ORM and create the initial database schema.
+- Configure OAuth authentication within the Docker environment.
 
 === Milestone 2: Core Functionality (4-6 Weeks)
-- Implement household and chore management features.
-- Integrate OAuth authentication and user management.
-- Develop the notification system.
+- Implement household management features using Prisma models and API endpoints.
+- Develop chore management functionality, including CRUD operations with Prisma.
+- Create the notification system using Prisma models and real-time updates.
+- Build the frontend components for household, chore, and notification management.
+- Develop the mobile app screens and ensure communication with the Dockerized backend.
 
 === Milestone 3: Testing and Refinement (3-4 Weeks)
-- Complete unit, integration, and end-to-end testing.
-- Optimize the application for performance and user experience.
+- Complete unit testing for backend API endpoints, including Prisma operations.
+- Perform integration testing within the Docker environment.
+- Conduct end-to-end testing using Cypress for the web application.
+- Optimize Prisma queries and Docker configurations for improved performance.
+- Refine the user interface based on initial feedback and usability testing.
 
 === Milestone 4: Deployment and Launch (2-3 Weeks)
-- Prepare and deploy the application to production environments.
+- Prepare production-ready Docker images for the backend and frontend.
+- Set up production environments (e.g., AWS ECS, Vercel) with proper configurations for Prisma and Docker.
+- Deploy the web application using Docker containers.
 - Publish the mobile application to app stores.
-- Set up monitoring and maintenance processes.
+- Implement monitoring and logging solutions compatible with the Docker setup.
+- Establish a CI/CD pipeline for automated testing and deployment of Docker images.
+
+== Gathering Results
+
+=== Evaluation
+- Conduct user testing to gather feedback on the core features and Docker-based deployment.
+- Monitor the app's performance and reliability in the production Docker environment.
+- Review user feedback and Docker logs for potential improvements and future updates.
+- Assess the effectiveness of the Prisma ORM in handling database operations at scale.
 
 == Gathering Results
 

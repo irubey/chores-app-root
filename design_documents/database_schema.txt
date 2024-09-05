@@ -1,120 +1,86 @@
-=== Database Schema
+# Database Schema
 
-The database schema for the app is designed to support multi-user households, chore management, and notifications. The following tables are key to the system:
+## Users Table
+- id: UUID (Primary Key)
+- email: VARCHAR (unique)
+- name: VARCHAR
+- oauth_provider: VARCHAR
+- oauth_id: VARCHAR (unique)
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
 
-==== 1. Users Table
-Stores information about each user, including OAuth credentials and associated households.
+## Households Table
+- id: UUID (Primary Key)
+- name: VARCHAR
+- created_at: TIMESTAMP
 
-[plantuml]
-----
-entity "Users" {
-  *id : UUID [PK]
-  --
-  *email : varchar
-  *name : varchar
-  *oauth_provider : varchar
-  *oauth_id : varchar [unique]
-  *created_at : timestamp
-  *updated_at : timestamp
-}
-----
+## Household_Members Table
+- user_id: UUID (Foreign Key -> Users.id)
+- household_id: UUID (Foreign Key -> Households.id)
+- role: VARCHAR
+- joined_at: TIMESTAMP
 
-- **id**: Unique identifier for each user.
-- **email**: User's email address.
-- **name**: User's name.
-- **oauth_provider**: The OAuth provider (e.g., Google, Facebook).
-- **oauth_id**: Unique identifier from the OAuth provider.
-- **created_at**: Timestamp when the user account was created.
-- **updated_at**: Timestamp when the user account was last updated.
+## Chores Table
+- id: UUID (Primary Key)
+- household_id: UUID (Foreign Key -> Households.id)
+- title: VARCHAR
+- description: TEXT
+- time_estimate: INTEGER
+- frequency: VARCHAR
+- assigned_to: UUID (Foreign Key -> Users.id, nullable)
+- status: VARCHAR
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+- due_date: DATE
 
-==== 2. Households Table
-Tracks households, which are groups of users sharing chores.
+## Notifications Table
+- id: UUID (Primary Key)
+- user_id: UUID (Foreign Key -> Users.id)
+- chore_id: UUID (Foreign Key -> Chores.id, nullable)
+- type: VARCHAR
+- message: TEXT
+- sent_at: TIMESTAMP
 
-[plantuml]
-----
-entity "Households" {
-  *id : UUID [PK]
-  --
-  *name : varchar
-  *created_at : timestamp
-}
-----
+## UserPreferences Table
+- id: UUID (Primary Key)
+- user_id: UUID (Foreign Key -> Users.id, unique)
+- notification_preferences: JSON
+- chore_preferences: JSON
+- theme: VARCHAR
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
 
-- **id**: Unique identifier for each household.
-- **name**: Name of the household.
-- **created_at**: Timestamp when the household was created.
+## Badges Table
+- id: UUID (Primary Key)
+- name: VARCHAR
+- description: VARCHAR
+- icon_url: VARCHAR
 
-==== 3. Household_Members Table
-A join table that links users to households.
+## UserBadges Table
+- user_id: UUID (Foreign Key -> Users.id)
+- badge_id: UUID (Foreign Key -> Badges.id)
+- earned_at: TIMESTAMP
 
-[plantuml]
-----
-entity "Household_Members" {
-  *user_id : UUID [FK -> Users.id]
-  *household_id : UUID [FK -> Households.id]
-  --
-  *role : varchar
-  *joined_at : timestamp
-}
-----
+## CalendarIntegrations Table
+- id: UUID (Primary Key)
+- user_id: UUID (Foreign Key -> Users.id, unique)
+- provider: VARCHAR
+- access_token: VARCHAR
+- refresh_token: VARCHAR
+- expires_at: TIMESTAMP
 
-- **user_id**: References the user.
-- **household_id**: References the household.
-- **role**: Defines the user's role within the household (e.g., admin, member).
-- **joined_at**: Timestamp when the user joined the household.
+## ChoreTemplates Table
+- id: UUID (Primary Key)
+- title: VARCHAR
+- description: TEXT
+- time_estimate: INTEGER
+- frequency: VARCHAR
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
 
-==== 4. Chores Table
-Stores details about chores within a household.
-
-[plantuml]
-----
-entity "Chores" {
-  *id : UUID [PK]
-  --
-  *household_id : UUID [FK -> Households.id]
-  *title : varchar
-  *description : text
-  *time_estimate : integer
-  *frequency : varchar
-  *assigned_to : UUID [FK -> Users.id] nullable
-  *status : varchar
-  *created_at : timestamp
-  *updated_at : timestamp
-  *due_date : date
-}
-----
-
-- **id**: Unique identifier for each chore.
-- **household_id**: References the household the chore belongs to.
-- **title**: Title of the chore.
-- **description**: Description of the chore.
-- **time_estimate**: Estimated time to complete the chore (in minutes).
-- **frequency**: Frequency of the chore (e.g., daily, weekly, monthly).
-- **assigned_to**: References the user assigned to the chore (nullable if unassigned).
-- **status**: Status of the chore (e.g., pending, in-progress, completed).
-- **created_at**: Timestamp when the chore was created.
-- **updated_at**: Timestamp when the chore was last updated.
-- **due_date**: The next due date for the chore, based on its frequency.
-
-==== 5. Notifications Table
-Logs notifications sent to users about chore updates.
-
-[plantuml]
-----
-entity "Notifications" {
-  *id : UUID [PK]
-  --
-  *user_id : UUID [FK -> Users.id]
-  *chore_id : UUID [FK -> Chores.id] nullable
-  *type : varchar
-  *message : text
-  *sent_at : timestamp
-}
-----
-
-- **id**: Unique identifier for each notification.
-- **user_id**: References the user receiving the notification.
-- **chore_id**: References the related chore (nullable for general notifications).
-- **type**: Type of notification (e.g., chore assigned, chore completed).
-- **message**: Content of the notification.
-- **sent_at**: Timestamp when the notification was sent.
+## ChoreActivity Table
+- id: UUID (Primary Key)
+- chore_id: UUID (Foreign Key -> Chores.id)
+- user_id: UUID (Foreign Key -> Users.id)
+- action: VARCHAR
+- timestamp: TIMESTAMP

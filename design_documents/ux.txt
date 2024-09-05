@@ -1,0 +1,22 @@
+
+1. Household Creation:
+Collaborative Setup: One roommate initiates household creation and invites others. Roommates collectively decide on chores, preferences, and time estimates.
+Preset Templates: The app provides preset chore templates (e.g., dishes, vacuuming), which can be customized by adding or modifying tasks and time estimates.
+2. Chore Setup & Task Preferences:
+Editable Checklists: Roommates create and modify checklists of tasks, including time estimates and sub-tasks.
+Preference-Based Distribution: Users specify preferences (e.g., small tasks frequently vs. large tasks occasionally) and dislikes, which the app uses to balance weekly task distribution.
+Task Duration Threshold: Only tasks estimated to take more than 5 minutes are distributed during chore assignments.
+3. Miscellaneous Tasks (<5 minutes):
+Optional Recording: Users can record miscellaneous tasks they perform that take less than 5 minutes (e.g., wiping down counters or watering plants) alongside their distributed tasks.
+Miscellaneous Task Tracking: These quick tasks won’t be pre-assigned, but users can log them, and the app can track who’s pitching in with small but helpful actions.
+4. Weekly Chore Distribution:
+Time & Preference Balancing: The app distributes chores weekly based on time estimates and preferences, ensuring tasks (over 5 minutes) are fairly shared among roommates.
+Visual Distribution: Use visual aids (like pie charts) to show chore distribution. Roommates can schedule chores themselves and request task swaps or coverage from others.
+5. Calendar Integration & Notifications:
+Google & Apple Calendar Sync: Users can schedule chores directly into their personal calendars, with reminders sent based on their preferences.
+Manual Scheduling: Users have control over when they schedule their chores each week, without the need for time blocking.
+6. Gamification & Badges:
+Badges: Users earn badges like "Good Roommate" or "Task Master" for consistent participation, completing extra chores, or helping other roommates. The badge system adds a fun layer of engagement without a competitive leaderboard.
+7. Feedback & Improvement Loop:
+Time Tracking: Users log the actual time taken for tasks, allowing the app to learn from time estimates and improve future distributions.
+Weekly Feedback: Users provide feedback on chore distribution, helping the app optimize task assignments based on preferences and actual time spent.

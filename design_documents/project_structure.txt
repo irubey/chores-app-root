@@ -3,27 +3,93 @@ choresApp/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── pages/
-│   │   └── styles/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   └── contexts/
 │   ├── public/
-│   └── package.json
+│   │   ├── favicon.ico
+│   │   └── (other static assets)
+│   ├── .env.local
+│   ├── Dockerfile
+│   ├── next-env.d.ts
+│   ├── next.config.mjs
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── tailwind.config.ts
+│   ├── tsconfig.json
+│   └── README.md
 ├── backend/
 │   ├── src/
-│   │   ├── routes/
+│   │   ├── config/
+│   │   │   ├── database.ts
+│   │   │   └── auth.ts
 │   │   ├── controllers/
-│   │   └── models/
+│   │   │   ├── authController.ts
+│   │   │   ├── householdController.ts
+│   │   │   ├── choreController.ts
+│   │   │   ├── notificationController.ts
+│   │   │   ├── userController.ts
+│   │   │   ├── choreTemplateController.ts
+│   │   │   ├── calendarIntegrationController.ts
+│   │   │   └── badgeController.ts
+│   │   ├── middlewares/
+│   │   │   ├── authMiddleware.ts
+│   │   │   ├── errorHandler.ts
+│   │   │   └── validate.ts
+│   │   ├── models/
+│   │   │   └── index.ts
+│   │   ├── routes/
+│   │   │   ├── auth.ts
+│   │   │   ├── households.ts
+│   │   │   ├── chores.ts
+│   │   │   ├── notifications.ts
+│   │   │   ├── users.ts
+│   │   │   ├── choreTemplates.ts
+│   │   │   ├── calendarIntegration.ts
+│   │   │   └── badges.ts
+│   │   ├── services/
+│   │   │   ├── authService.ts
+│   │   │   ├── householdService.ts
+│   │   │   ├── choreService.ts
+│   │   │   ├── notificationService.ts
+│   │   │   ├── userService.ts
+│   │   │   ├── choreTemplateService.ts
+│   │   │   ├── calendarIntegrationService.ts
+│   │   │   └── badgeService.ts
+│   │   ├── utils/
+│   │   │   ├── logger.ts
+│   │   │   └── validators.ts
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   └── app.ts
 │   ├── prisma/
-│   └── package.json
+│   │   ├── schema.prisma
+│   │   └── migrations/
+│   ├── tests/
+│   │   ├── example_test.ts
+│   ├── .env
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── README.md
 ├── mobile/
 │   ├── src/
 │   │   ├── components/
 │   │   └── screens/
 │   ├── ios/
+│   │   ├── myApp/
+│   │   ├── myApp.xcodeproj/
+│   │   └── myApp.xcworkspace/
 │   ├── android/
-│   └── package.json
-└── design_documents/
-    ├── api_design.txt
-    ├── component_design.txt
-    ├── full_plan.txt
-    ├── implementation.txt
-    ├── milestones.txt
-    └── project_structure.txt
+│   │   ├── app/
+│   │   └── gradle.properties
+│   ├── package.json
+│   ├── .gitignore
+│   └── README.md
+├── design_documents/
+│   ├── full_plan.txt
+│   ├── project_structure.txt
+│   └── ux.txt
+├── docker-compose.yml
+├── .gitmodules
+└── .dockerignore
