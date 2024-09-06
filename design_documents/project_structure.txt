@@ -36,8 +36,6 @@ choresApp/
 │   │   │   ├── authMiddleware.ts
 │   │   │   ├── errorHandler.ts
 │   │   │   └── validate.ts
-│   │   ├── models/
-│   │   │   └── index.ts
 │   │   ├── routes/
 │   │   │   ├── auth.ts
 │   │   │   ├── households.ts

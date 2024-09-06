@@ -74,6 +74,11 @@ The Household Chore Management App will be built using a three-tier architecture
      - **Chores Table**: Tracks each chore's details, such as description, time estimate, frequency, and assignment status.
      - **Notifications Table**: Logs notifications sent to users, including the type (e.g., chore reminder, completion notification) and timestamp.
 
+4. **Docker Environment**:
+   - **Containerization**: The entire application is containerized using Docker, ensuring consistency across development and production environments.
+   - **Docker Compose**: Used for orchestrating multi-container setup, including backend, frontend, database, and Prisma services.
+   - **Environment Variables**: Managed through `.env` files for each service, ensuring secure and flexible configuration.
+   - **Health Checks**: Implemented for backend and database services to ensure readiness before dependent services start.
 
 === Database Schema
 
@@ -688,17 +693,18 @@ Awards a badge to a user.
 
 - **Task 1.1: Set Up Project Repositories**
   - Create separate repositories for the backend and frontend.
-  - Set up version control (GitHub) and configure continuous integration (GitHub Actions) for automated testing.
+  - Set up version control (GitHub) and configure continuous integration (GitHub Actions) for automated testing and building.
 
 - **Task 1.2: Configure Docker Environment**
   - Create Dockerfiles for the backend and frontend services.
-  - Create a `docker-compose.yml` file to orchestrate the multi-container setup.
+  - Create a `docker-compose.yml` file to orchestrate the multi-container setup, including backend, frontend, database, and Prisma services.
   - Configure environment variables and secrets for OAuth, database connections, and Prisma.
+  - Implement health checks for backend and database services.
 
 - **Task 1.3: Set Up Backend with Node.js, Express, and Prisma**
   - Initialize the Node.js project and set up Express for the API server.
   - Install and configure Prisma ORM.
-  - Create the Prisma schema based on the database design.
+  - Create the Prisma schema based on the database design, including all tables and relationships.
   - Implement basic middleware for logging, error handling, and JSON parsing.
   - Set up PostgreSQL connection using Docker, and initialize the database with Prisma migrations.
 
@@ -714,20 +720,25 @@ Awards a badge to a user.
 
 === Phase 2: Core Features Development
 
-- **Task 2.1: Implement Household Management**
-  - Backend: Develop Prisma models and API endpoints for creating households, managing members, and retrieving household details.
-  - Frontend: Create components for household creation, member management, and household switching.
-  - Mobile: Implement the household management UI, ensuring it works with the Dockerized backend.
+- **Task 2.1: Implement Authentication**
+  - Implement OAuth authentication for Google, Facebook, and Apple.
+  - Create authentication middleware and JWT token generation.
 
-- **Task 2.2: Develop Chore Management**
-  - Backend: Implement Prisma models and CRUD operations for chores, including assigning chores to users and managing chore statuses.
-  - Frontend: Build the chore summary, creation, assignment, and detail view components.
-  - Mobile: Implement chore management screens, ensuring synchronization with the Dockerized backend.
+- **Task 2.2: Implement Household Management**
+  - Develop Prisma models and API endpoints for creating households, managing members, and retrieving household details.
+  - Implement role-based access control for household management.
 
-- **Task 2.3: Implement Notifications**
-  - Backend: Develop Prisma models and API endpoints for sending, retrieving, and managing notifications.
-  - Frontend: Create the notification center and integrate real-time updates using WebSockets or polling.
-  - Mobile: Implement push notifications and the notification center, ensuring compatibility with the Dockerized backend.
+- **Task 2.3: Develop Chore Management**
+  - Implement Prisma models and CRUD operations for chores, including assigning chores to users and managing chore statuses.
+  - Develop chore templates and preference-based chore distribution logic.
+
+- **Task 2.4: Implement Notifications**
+  - Develop Prisma models and API endpoints for sending, retrieving, and managing notifications.
+  - Implement real-time notifications using WebSockets or a similar technology.
+
+- **Task 2.5: Develop Calendar Integration**
+  - Implement API endpoints for syncing chores with Google and Apple calendars.
+  - Develop the logic for managing calendar access tokens and refreshing them when necessary.
 
 === Phase 3: Testing and Refinement
 
@@ -751,18 +762,23 @@ Awards a badge to a user.
   - Create production-ready Docker images with multi-stage builds.
   - Configure environment variables for OAuth credentials, database connections, and Prisma.
 
-- **Task 4.2: Deploy Web Application**
+- **Task 4.2: Set Up CI/CD Pipeline**
+  - Configure GitHub Actions for automated testing, building, and deployment of Docker images.
+  - Implement automated deployment to staging and production environments.
+
+- **Task 4.3: Deploy Web Application**
   - Deploy the Next.js web app to a hosting service like Vercel or AWS ECS using Docker.
   - Set up DNS and SSL for a custom domain.
 
-- **Task 4.3: Deploy Mobile Application**
+- **Task 4.4: Deploy Mobile Application**
   - Package the React Native app for iOS and Android.
   - Publish the app on the Apple App Store and Google Play Store.
 
-- **Task 4.4: Monitor and Maintenance**
+- **Task 4.5: Monitor and Maintenance**
   - Set up monitoring and logging for both the backend and frontend, leveraging Docker's built-in logging capabilities.
+  - Implement error tracking and performance monitoring tools.
   - Prepare for regular updates and bug fixes based on user feedback.
-  - Implement a CI/CD pipeline for automated testing and deployment of Docker images.
+  - Establish a process for continuous improvement and feature updates.
 
 == Milestones
 
