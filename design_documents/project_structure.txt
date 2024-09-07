@@ -21,6 +21,7 @@ choresApp/
 │   │   ├── components/
 │   │   │   ├── common/
 │   │   │   │   ├── Footer.tsx
+│   │   │   │   ├── ErrorBoundary.tsx
 │   │   │   │   ├── Header.tsx
 │   │   │   │   ├── LoadingSpinner.tsx  
 │   │   │   │   └── Button.tsx
@@ -34,7 +35,6 @@ choresApp/
 │   │   │   │   ├── HouseholdForm.tsx
 │   │   │   │   └── HouseholdMemberList.tsx
 │   │   │   ├── auth/
-│   │   │   │   ├── LoginForm.tsx
 │   │   │   │   └── OAuthButtons.tsx
 │   │   │   ├── dashboard/
 │   │   │   │   ├── DashboardSummary.tsx
@@ -57,10 +57,12 @@ choresApp/
 │   │   │   │   ├── FeedbackForm.tsx
 │   │   │   │   ├── FeedbackList.tsx
 │   │   │   │   └── FeedbackItem.tsx
-│   │   │   └── Navbar.tsx
+│   │   │   └── layouts/
+│   │   │      └── ThemedBody.tsx
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.tsx
-│   │   │   └── HouseholdContext.tsx
+│   │   │   ├── HouseholdContext.tsx
+│   │   │   └── ThemeContext.tsx
 │   │   ├── hooks/
 │   │   │   ├── useAuth.ts
 │   │   │   ├── useChores.ts
@@ -70,15 +72,15 @@ choresApp/
 │   │   ├── utils/
 │   │      ├── api.ts
 │   │      ├── auth.ts
-│   │      └── helpers.ts
+│   │      ├── helpers.ts
 │   │      ├── accessibility/
-│   │      │   ├── colorContrast.ts
-│   │      │   ├── keyboardNavigation.ts
-│   │      │   ├── screenReaderUtils.ts
-│   │      │   └── a11yHelpers.ts
+│   │         ├── colorContrast.ts
+│   │         ├── keyboardNavigation.ts
+│   │         ├── screenReaderUtils.ts
+│   │         └── a11yHelpers.ts
 │   ├── public/
 │   │   ├── favicon.ico
-│   │   └── (other static assets)
+│   │   └── icons/
 │   ├── .env.local
 │   ├── Dockerfile
 │   ├── next-env.d.ts
