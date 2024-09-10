@@ -6,7 +6,8 @@ choresApp/
 │   │   │   │   ├── [id]/
 │   │   │   │   │   └── page.tsx
 │   │   │   │   ├── create/
-│   │   │   │       └── page.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
 │   │   │   ├── dashboard/
 │   │   │   │   └── page.tsx
 │   │   │   ├── household/
@@ -34,6 +35,7 @@ choresApp/
 │   │   │   │   └── ChoreFilter.tsx
 │   │   │   ├── household/
 │   │   │   │   ├── HouseholdSelector.tsx
+│   │   │   │   ├── InviteUserButton.tsx
 │   │   │   │   ├── HouseholdForm.tsx
 │   │   │   │   └── HouseholdMemberList.tsx
 │   │   │   ├── auth/
@@ -73,7 +75,8 @@ choresApp/
 │   │   ├── hooks/
 │   │   │   ├── useAuth.ts
 │   │   │   ├── useChores.ts
-│   │   │   └── useHousehold.ts
+│   │   │   ├── useChoreTemplates.ts
+│   │   │   ├── useHousehold.ts
 │   │   ├──styles/
 │   │   │   └── globals.css
 │   │   ├── utils/
