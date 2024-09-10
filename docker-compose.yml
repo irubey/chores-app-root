@@ -17,7 +17,16 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    command: ["npm", "run", "dev"]
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...'
+        sleep 10
+        npx prisma migrate deploy
+        npm run dev:seed
+        npm run dev
+      "
+    environment:
+      - NODE_ENV=development
     networks:
       - app-network
 

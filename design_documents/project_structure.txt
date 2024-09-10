@@ -16,6 +16,8 @@ choresApp/
 │   │   │   │       └── page.tsx
 │   │   │   ├── login/
 │   │   │   │   └── page.tsx
+│   │   │   ├── oauth/
+│   │   │   │   └── page.tsx
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── components/
@@ -38,7 +40,10 @@ choresApp/
 │   │   │   │   └── OAuthButtons.tsx
 │   │   │   ├── dashboard/
 │   │   │   │   ├── DashboardSummary.tsx
-│   │   │   │   └── ChoreDistributionChart.tsx
+│   │   │   │   ├── QuickActionPanel.tsx
+│   │   │   │   ├── ChoreDistributionChart.tsx
+│   │   │   │   ├── RecentActivityFeed.tsx
+│   │   │   │   └── UpcomingChores.tsx
 │   │   │   ├── notifications/
 │   │   │   │   └── NotificationCenter.tsx
 │   │   │   ├── templates/
@@ -57,8 +62,10 @@ choresApp/
 │   │   │   │   ├── FeedbackForm.tsx
 │   │   │   │   ├── FeedbackList.tsx
 │   │   │   │   └── FeedbackItem.tsx
-│   │   │   └── layouts/
-│   │   │      └── ThemedBody.tsx
+│   │   │   ├── layouts/
+│   │   │   │   └── ThemedBody.tsx
+│   │   │   └── test/
+│   │   │       └── TestConnection.tsx
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.tsx
 │   │   │   ├── HouseholdContext.tsx
@@ -77,7 +84,7 @@ choresApp/
 │   │         ├── colorContrast.ts
 │   │         ├── keyboardNavigation.ts
 │   │         ├── screenReaderUtils.ts
-│   │         └── a11yHelpers.ts
+│   │         └── allyHelpers.ts
 │   ├── public/
 │   │   ├── favicon.ico
 │   │   └── icons/
@@ -94,6 +101,7 @@ choresApp/
 │   ├── src/
 │   │   ├── config/
 │   │   │   ├── database.ts
+│   │   │   ├── passport.ts
 │   │   │   └── auth.ts
 │   │   ├── controllers/
 │   │   │   ├── authController.ts
@@ -109,6 +117,7 @@ choresApp/
 │   │   │   ├── errorHandler.ts
 │   │   │   └── validate.ts
 │   │   ├── routes/
+│   │   │   ├── index.ts
 │   │   │   ├── auth.ts
 │   │   │   ├── households.ts
 │   │   │   ├── chores.ts
@@ -134,6 +143,7 @@ choresApp/
 │   │   └── app.ts
 │   ├── prisma/
 │   │   ├── schema.prisma
+│   │   ├── seed.ts
 │   │   └── migrations/
 │   ├── tests/
 │   │   ├── example_test.ts
