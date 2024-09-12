@@ -1,0 +1,14 @@
+1. Sign up
+2. Create household
+3. Invite roommates
+4. Create chores
+5. Assign chores to roommates
+6. Track chore completion
+7. View chore history
+8. Log quick tasks
+9. View household stats
+10. Rate chore distribution fairness
+11. Provide feedback
+12. View progress
+13. Access settings
+14. Logout
