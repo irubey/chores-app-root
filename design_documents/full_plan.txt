@@ -80,9 +80,21 @@ The Household Chore Management App will be built using a three-tier architecture
    - **Environment Variables**: Managed through `.env` files for each service, ensuring secure and flexible configuration.
    - **Health Checks**: Implemented for backend and database services to ensure readiness before dependent services start.
 
-=== Database Schema
+=== Backend Architecture
 
-The database schema for the app is designed to support multi-user households, chore management, notifications, and additional features. The following tables and enums are key to the system:
+The backend of the Household Chore Management App is built using Node.js with Express.js as the web framework. It uses Prisma as the ORM to interact with a PostgreSQL database. The backend is containerized using Docker for consistent development and deployment environments.
+
+==== Key Components:
+
+1. **Express.js Server**: Handles HTTP requests and routes them to appropriate controllers.
+2. **Prisma ORM**: Manages database operations and schema migrations.
+3. **Authentication**: Implements OAuth 2.0 for secure user authentication.
+4. **API Endpoints**: RESTful APIs for managing households, chores, users, and other features.
+5. **Docker**: Ensures consistent environments across development and production.
+
+==== Database Schema:
+
+The database schema is defined using Prisma and includes the following main models:
 
 ==== Enums
 
@@ -94,187 +106,208 @@ The database schema for the app is designed to support multi-user households, ch
 - **ChorePriority**: LOW, MEDIUM, HIGH
 - **NotificationType**: CHORE_ASSIGNED, CHORE_COMPLETED, CHORE_DUE_SOON, HOUSEHOLD_INVITE
 
-==== 1. Users Table
-Stores information about each user, including OAuth credentials and associated data.
-
-[plantuml]
-----
-entity "Users" {
-  *id : UUID [PK]
-  --
-  *email : varchar [unique]
-  *name : varchar
-  *oauth_provider : OAuthProvider
-  *oauth_id : varchar [unique]
-  *role : UserRole
-  *created_at : timestamp
-  *updated_at : timestamp
+generator client {
+  provider = "prisma-client-js"
 }
-----
 
-==== 2. Households Table
-Tracks households, which are groups of users sharing chores.
-
-[plantuml]
-----
-entity "Households" {
-  *id : UUID [PK]
-  --
-  *name : varchar
-  *status : HouseholdStatus
-  *created_at : timestamp
-  *updated_at : timestamp
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
-----
 
-==== 3. HouseholdMembers Table
-A join table that links users to households.
-
-[plantuml]
-----
-entity "HouseholdMembers" {
-  *user_id : UUID [FK -> Users.id]
-  *household_id : UUID [FK -> Households.id]
-  --
-  *role : UserRole
-  *joined_at : timestamp
+enum OAuthProvider {
+  GOOGLE
+  FACEBOOK
+  APPLE
 }
-----
 
-==== 4. Chores Table
-Stores details about chores within a household.
-
-[plantuml]
-----
-entity "Chores" {
-  *id : UUID [PK]
-  --
-  *household_id : UUID [FK -> Households.id]
-  *title : varchar
-  description : text
-  time_estimate : integer
-  *frequency : ChoreFrequency
-  assigned_to : UUID [FK -> Users.id]
-  *status : ChoreStatus
-  *priority : ChorePriority
-  *created_at : timestamp
-  *updated_at : timestamp
-  due_date : date
-  last_completed : timestamp
-  template_id : UUID [FK -> ChoreTemplates.id]
+enum UserRole {
+  ADMIN
+  MEMBER
 }
-----
 
-==== 5. Notifications Table
-Logs notifications sent to users about chore updates.
-
-[plantuml]
-----
-entity "Notifications" {
-  *id : UUID [PK]
-  --
-  *user_id : UUID [FK -> Users.id]
-  chore_id : UUID [FK -> Chores.id]
-  *type : NotificationType
-  message : text
-  *sent_at : timestamp
-  *read : boolean
+enum HouseholdStatus {
+  ACTIVE
+  INACTIVE
 }
-----
 
-==== 6. ChoreTemplates Table
-Stores preset chore templates that can be used to create new chores.
-
-[plantuml]
-----
-entity "ChoreTemplates" {
-  *id : UUID [PK]
-  --
-  *title : varchar
-  description : text
-  time_estimate : integer
-  *frequency : ChoreFrequency
-  *created_at : timestamp
-  *updated_at : timestamp
+enum ChoreStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
 }
-----
 
-==== 7. UserPreferences Table
-Stores user-specific preferences for the application.
-
-[plantuml]
-----
-entity "UserPreferences" {
-  *id : UUID [PK]
-  *user_id : UUID [FK -> Users.id]
-  --
-  notification_preferences : json
-  chore_preferences : json
-  theme : varchar
-  *created_at : timestamp
-  *updated_at : timestamp
+enum ChoreFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
 }
-----
 
-==== 8. Badges Table
-Represents achievement badges that can be awarded to users.
-
-[plantuml]
-----
-entity "Badges" {
-  *id : UUID [PK]
-  --
-  *name : varchar
-  *description : text
-  *icon_url : varchar
+enum ChorePriority {
+  LOW
+  MEDIUM
+  HIGH
 }
-----
 
-==== 9. CalendarIntegrations Table
-Manages calendar integrations for users.
-
-[plantuml]
-----
-entity "CalendarIntegrations" {
-  *id : UUID [PK]
-  *user_id : UUID [FK -> Users.id]
-  --
-  *provider : varchar
-  *access_token : varchar
-  refresh_token : varchar
-  expires_at : timestamp
+enum NotificationType {
+  CHORE_ASSIGNED
+  CHORE_COMPLETED
+  CHORE_DUE_SOON
+  HOUSEHOLD_INVITE
 }
-----
 
-==== 10. ChoreActivities Table
-Tracks activity log for chores.
-
-[plantuml]
-----
-entity "ChoreActivities" {
-  *id : UUID [PK]
-  *chore_id : UUID [FK -> Chores.id]
-  *user_id : UUID [FK -> Users.id]
-  --
-  *action : varchar
-  *created_at : timestamp
+model User {
+  id                   String               @id @default(uuid())
+  email                String               @unique
+  name                 String
+  oauth_provider       OAuthProvider
+  oauth_id             String               @unique
+  role                 UserRole             @default(MEMBER)
+  created_at           DateTime             @default(now())
+  updated_at           DateTime             @updatedAt
+  assignedChores       Chore[]              @relation("UserAssignedChores")
+  householdMembers     HouseholdMember[]
+  notifications        Notification[]
+  preferences          UserPreference?
+  calendarIntegration  CalendarIntegration?
+  choreActivities      ChoreActivity[]
+  badges               UserBadge[]
 }
-----
 
-==== 11. UserBadges Table
-A join table that links users to their earned badges.
-
-[plantuml]
-----
-entity "UserBadges" {
-  *user_id : UUID [FK -> Users.id]
-  *badge_id : UUID [FK -> Badges.id]
-  --
-  *awarded_at : timestamp
+model Household {
+  id         String            @id @default(uuid())
+  name       String
+  status     HouseholdStatus   @default(ACTIVE)
+  created_at DateTime          @default(now())
+  updated_at DateTime          @updatedAt
+  chores     Chore[]
+  members    HouseholdMember[]
 }
-----
 
-This schema reflects the current structure defined in the `schema.prisma` file, including all models, their fields, and relationships. The use of UUIDs for primary keys and the inclusion of timestamp fields for creation and updates are maintained throughout.
+model HouseholdMember {
+  user_id      String
+  household_id String
+  role         UserRole   @default(MEMBER)
+  joined_at    DateTime   @default(now())
+  household    Household  @relation(fields: [household_id], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, household_id])
+  @@index([household_id])
+  @@index([user_id])
+}
+
+model Chore {
+  id            String         @id @default(uuid())
+  household_id  String
+  title         String
+  description   String?
+  time_estimate Int?
+  frequency     ChoreFrequency
+  assigned_to   String[]
+  status        ChoreStatus    @default(PENDING)
+  priority      ChorePriority  @default(MEDIUM)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  due_date      DateTime?
+  last_completed DateTime?
+  assigned_user User?          @relation("UserAssignedChores", fields: [assigned_to], references: [id])
+  household     Household      @relation(fields: [household_id], references: [id], onDelete: Cascade)
+  notifications Notification[]
+  template_id   String?
+  template      ChoreTemplate? @relation(fields: [template_id], references: [id])
+  activities    ChoreActivity[]
+}
+
+model Notification {
+  id       String           @id @default(uuid())
+  user_id  String
+  chore_id String?
+  type     NotificationType
+  message  String?
+  sent_at  DateTime         @default(now())
+  read     Boolean          @default(false)
+  chore    Chore?           @relation(fields: [chore_id], references: [id])
+  user     User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model ChoreTemplate {
+  id            String         @id @default(uuid())
+  title         String         @unique
+  description   String?
+  time_estimate Int?
+  frequency     ChoreFrequency
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  chores        Chore[]
+  is_preset     Boolean        @default(false)
+}
+
+model UserPreference {
+  id      String @id @default(uuid())
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  notification_preferences Json?
+  chore_preferences        Json?
+  theme                    String?
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+}
+
+model Badge {
+  id          String     @id @default(uuid())
+  name        String
+  description String
+  icon_url    String
+  users       UserBadge[]
+}
+
+model CalendarIntegration {
+  id            String   @id @default(uuid())
+  user_id       String   @unique
+  provider      String
+  access_token  String
+  refresh_token String?
+  expires_at    DateTime?
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model ChoreActivity {
+  id         String   @id @default(uuid())
+  chore_id   String
+  chore      Chore    @relation(fields: [chore_id], references: [id])
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  action     String
+  created_at DateTime @default(now())
+
+  @@index([chore_id])
+  @@index([user_id])
+}
+
+model UserBadge {
+  user     User   @relation(fields: [user_id], references: [id])
+  user_id  String
+  badge    Badge  @relation(fields: [badge_id], references: [id])
+  badge_id String
+  awarded_at DateTime @default(now())
+
+  @@id([user_id, badge_id])
+}
+
+
+==== Key Features:
+
+1. **OAuth Authentication**: Supports Google, Facebook, and Apple sign-in methods.
+2. **Household Management**: CRUD operations for households and members.
+3. **Chore Management**: Create, assign, update, and delete chores within households.
+4. **Notifications**: System for sending and managing user notifications.
+5. **Chore Templates**: Predefined and custom chore templates for easy chore creation.
+6. **User Preferences**: Storing and managing user-specific settings.
+7. **Calendar Integration**: Syncing chores with external calendar services.
+8. **Badge System**: Awarding and tracking user achievements.
 
 === Docker Network Configuration
 
@@ -556,122 +589,7 @@ Retrieves all notifications for the user.
 - Errors: { "error": "Unauthorized" }
 - Supports: Pagination, filtering, sorting
 
-===== PUT /api/notifications/{notification_id}/read
-Marks a notification as read.
-
-- Response: { "message": "Notification marked as read" }
-- Errors: { "error": "Validation error" }
-
-===== DELETE /api/notifications/{notification_id}
-Deletes a specific notification.
-
-- Response: { "message": "Notification deleted" }
-- Errors: { "error": "Unauthorized" }
-
-===== PUT /api/notifications/preferences
-Updates the user's notification preferences.
-
-- Request: { "notification_preferences": { "email_notifications": boolean, "push_notifications": boolean, "chore_reminders": boolean, "household_updates": boolean } }
-- Response: { "message": "Notification preferences updated" }
-- Errors: { "error": "Validation error" }
-
-==== Chore Templates API
-
-===== POST /api/chore-templates
-Creates a new chore template.
-
-- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }
-- Response: { "id": "string", "title": "string", "created_at": "timestamp" }
-- Errors: { "error": "Validation error" }
-
-===== GET /api/chore-templates
-Retrieves all chore templates.
-
-- Response: [{ "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }]
-- Errors: { "error": "Unauthorized" }
-- Supports: Pagination, filtering, sorting
-
-===== GET /api/chore-templates/{template_id}
-Retrieves detailed information about a specific chore template.
-
-- Response: { "id": "string", "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM", "created_at": "timestamp" }
-- Errors: { "error": "Not found" }
-
-===== PUT /api/chore-templates/{template_id}
-Updates a specific chore template's details.
-
-- Request: { "title": "string", "description": "string", "time_estimate": "integer", "frequency": "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM" }
-- Response: { "message": "Chore template updated" }
-- Errors: { "error": "Validation error" }
-
-===== DELETE /api/chore-templates/{template_id}
-Deletes a specific chore template.
-
-- Response: { "message": "Chore template deleted successfully" }
-- Errors: { "error": "Unauthorized" }
-
-==== User Management API
-
-===== GET /api/users/profile
-Retrieves the user's profile information.
-
-- Response: { "id": "string", "name": "string", "email": "string", "oauth_provider": "string", "role": "string", "created_at": "timestamp", "updated_at": "timestamp" }
-- Errors: { "error": "Unauthorized" }
-
-===== PUT /api/users/profile
-Updates the user's profile information.
-
-- Request: { "name": "string" }
-- Response: { "id": "string", "name": "string", "email": "string", "oauth_provider": "string", "role": "string", "created_at": "timestamp", "updated_at": "timestamp" }
-- Errors: { "error": "Validation error" }
-
-===== GET /api/users/preferences
-Retrieves the user's preferences.
-
-- Response: { "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }
-- Errors: { "error": "Unauthorized" }
-
-===== PUT /api/users/preferences
-Updates the user's preferences.
-
-- Request: { "notification_preferences": {}, "chore_preferences": {}, "theme": "string" }
-- Response: { "message": "Preferences updated" }
-- Errors: { "error": "Validation error" }
-
-===== GET /api/users/badges
-Retrieves the user's earned badges.
-
-- Response: [{ "id": "string", "name": "string", "description": "string", "icon_url": "string" }]
-- Errors: { "error": "Unauthorized" }
-
-==== Calendar Integration API
-
-===== POST /api/calendar-integration
-Adds a new calendar integration for the user.
-
-- Request: { "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }
-- Response: { "message": "Calendar integration added" }
-- Errors: { "error": "Validation error" }
-
-===== GET /api/calendar-integration
-Retrieves the user's calendar integration details.
-
-- Response: { "provider": "string", "access_token": "string", "refresh_token": "string", "expires_at": "timestamp" }
-- Errors: { "error": "Unauthorized" }
-
-===== DELETE /api/calendar-integration
-Removes the user's calendar integration.
-
-- Response: { "message": "Calendar integration removed" }
-- Errors: { "error": "Unauthorized" }
-
-===== POST /api/calendar-integration/sync
-Syncs the user's chores with their connected calendar.
-
-- Response: { "message": "Chores synced successfully" }
-- Errors: { "error": "Internal server error" }
-
-==== Badges API
+==== Badge API
 
 ===== GET /api/badges
 Retrieves all available badges.
@@ -685,7 +603,6 @@ Awards a badge to a user.
 - Request: { "user_id": "string", "badge_id": "string" }
 - Response: { "message": "Badge awarded successfully" }
 - Errors: { "error": "Validation error" }
-
 
 == Implementation
 
