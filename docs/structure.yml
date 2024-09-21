@@ -90,6 +90,7 @@ choresApp:
         - SocketContext.tsx
       lib:
         - apiClient.ts
+        - socketClient.ts
         - utils.ts
       styles:
         - globals.css
@@ -98,6 +99,15 @@ choresApp:
         - expense.ts
         - chore.ts
         - notification.ts
+        - api.ts
+        - socket.ts
+        - attachment.ts
+        - event.ts
+        - household.ts
+        - subtask.ts
+        - user.ts
+        - oauth.ts
+        - upload.ts
       store:
         slices:
           - authSlice.ts
@@ -108,120 +118,7 @@ choresApp:
           - notificationsSlice.ts
         store.ts
       test:
-        frontend:
-          components:
-            common:
-              - Button.test.tsx
-              - Input.test.tsx
-              - Modal.test.tsx
-              - NotificationCenter.test.tsx
-            layout:
-              - Header.test.tsx
-              - Sidebar.test.tsx
-              - Footer.test.tsx
-            messages:
-              - MessageThread.test.tsx
-              - MessageThreadList.test.tsx
-              - MessageForm.test.tsx
-              - MessageList.test.tsx
-              - MessageItem.test.tsx
-              - AttachmentUploader.test.tsx
-            finances:
-              - ExpenseForm.test.tsx
-              - ExpenseList.test.tsx
-              - DebtSummary.test.tsx
-              - ExpenseItem.test.tsx
-              - ReceiptUploader.test.tsx
-            chores:
-              - ChoreList.test.tsx
-              - ChoreForm.test.tsx
-              - ChoreItem.test.tsx
-              - SubtaskList.test.tsx
-            calendar:
-              - CalendarView.test.tsx
-              - SharedCalendar.test.tsx
-              - EventForm.test.tsx
-              - CalendarIntegrationForm.test.tsx
-              - AutomaticScheduler.test.tsx
-            dashboard:
-              - DashboardSummary.test.tsx
-              - QuickActionPanel.test.tsx
-              - RecentActivityFeed.test.tsx
-              - UpcomingChores.test.tsx
-            household:
-              - HouseholdSelector.test.tsx
-              - HouseholdMemberList.test.tsx
-              - InviteUserButton.test.tsx
-          hooks:
-            - useAuth.test.ts
-            - useMessages.test.ts
-            - useFinances.test.ts
-            - useChores.test.ts
-            - useExpenses.test.ts
-            - useNotifications.test.ts
-            - useCalendar.test.ts
-          store:
-            - store.test.ts
-        backend:
-          controllers:
-            - AuthController.test.ts
-            - UserController.test.ts
-            - HouseholdController.test.ts
-            - MessageController.test.ts
-            - ChoreController.test.ts
-            - ExpenseController.test.ts
-            - TransactionController.test.ts
-            - EventController.test.ts
-            - CalendarIntegrationController.test.ts
-            - NotificationController.test.ts
-            - SubtaskController.test.ts
-          services:
-            - authService.test.ts
-            - userService.test.ts
-            - householdService.test.ts
-            - messageService.test.ts
-            - choreService.test.ts
-            - sharedExpenseService.test.ts
-            - transactionService.test.ts
-            - eventService.test.ts
-            - calendarIntegrationService.test.ts
-            - notificationService.test.ts
-            - pushNotificationService.test.ts
-            - subtaskService.test.ts
-          routes:
-            - auth-routes.test.ts
-            - user-routes.test.ts
-            - household-routes.test.ts
-            - message-routes.test.ts
-            - chore-routes.test.ts
-            - expense-routes.test.ts
-            - transaction-routes.test.ts
-            - event-routes.test.ts
-            - calendar-integration-routes.test.ts
-            - notification-routes.test.ts
-            - subtask-routes.test.ts
-          middlewares:
-            - authMiddleware.test.ts
-            - rbacMiddleware.test.ts
-            - rateLimitMiddleware.test.ts
-            - errorHandler.test.ts
-            - validateMiddleware.test.ts
-            - socketAuthMiddleware.test.ts
-          utils:
-            - asyncHandler.test.ts
-            - emailUtils.test.ts
-            - fileUpload.test.ts
-            - logger.test.ts
-            - tokenUtils.test.ts
-            - passwordUtils.test.ts
-            - validationSchemas.test.ts
-          sockets:
-            - index.test.ts
-          config:
-            - database.test.ts
-            - passport.test.ts
-            - auth.test.ts
-            - socket.test.ts
+        testfiles...
   backend:
     src:
       controllers:

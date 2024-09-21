@@ -654,6 +654,7 @@ choresApp:
         - SocketContext.tsx
       lib:
         - apiClient.ts
+        - socketClient.ts
         - utils.ts
       styles:
         - globals.css
@@ -662,6 +663,15 @@ choresApp:
         - expense.ts
         - chore.ts
         - notification.ts
+        - api.ts
+        - socket.ts
+        - attachment.ts
+        - event.ts
+        - household.ts
+        - subtask.ts
+        - user.ts
+        - oauth.ts
+        - upload.ts
       store:
         slices:
           - authSlice.ts
@@ -672,6 +682,7 @@ choresApp:
           - notificationsSlice.ts
         store.ts
       test:
+        testfiles...
   backend:
     src:
       controllers:
@@ -738,6 +749,8 @@ choresApp:
     - package.json
     - tsconfig.json
     test:
+      - testfiles...
+  
   docs:
     - full_plan.md
     - frontend_implementation.md
@@ -751,6 +764,9 @@ choresApp:
   - docker-compose.yml
   - .gitignore
   - README.md
+
+
+
 ```
 ---
 ## Database Schema
