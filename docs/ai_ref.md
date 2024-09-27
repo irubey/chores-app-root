@@ -181,7 +181,7 @@ Following the standards from `naming_conventions.md`:
 - **Services:** camelCase with `.ts` extension
   - Example: `apiClient.ts`
 - **Contexts:** PascalCase with `.tsx` extension
-  - Example: `AuthContext.tsx`
+  - Example: `ThemeContext.tsx`
 - **Utilities:** camelCase with `.ts` extension
   - Example: `helpers.ts`
 - **Constants:** UPPER_SNAKE_CASE
@@ -269,7 +269,7 @@ Following the standards from `naming_conventions.md`:
 3. **Services:** Use camelCase with `.ts` extension.
    - Example: `choreService.ts`
 4. **Contexts:** Use PascalCase with `.tsx` extension.
-   - Example: `AuthContext.tsx`
+   - Example: `ThemeContext.tsx`
 5. **Utilities:** Use camelCase with `.ts` extension.
    - Example: `logger.ts`
 6. **Types:** Use PascalCase with `.ts` extension.
@@ -649,7 +649,6 @@ choresApp:
         - useNotifications.ts
         - useCalendar.ts
       contexts:
-        - AuthContext.tsx
         - ThemeContext.tsx
         - SocketContext.tsx
       lib:

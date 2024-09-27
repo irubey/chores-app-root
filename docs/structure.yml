@@ -85,7 +85,6 @@ choresApp:
         - useNotifications.ts
         - useCalendar.ts
       contexts:
-        - AuthContext.tsx
         - ThemeContext.tsx
         - SocketContext.tsx
       lib:
