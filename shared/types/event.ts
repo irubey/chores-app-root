@@ -7,6 +7,9 @@ import {
   Provider,
 } from "../enums";
 import { Chore } from "./chore";
+import { Household } from "./household";
+import { User } from "./user";
+import { RecurrenceRule } from "./utils";
 
 export interface Event {
   id: string;
@@ -26,6 +29,15 @@ export interface Event {
   isPrivate: boolean;
   status: EventStatus;
   deletedAt?: Date;
+}
+
+export interface EventWithDetails extends Event {
+  reminders: EventReminder[];
+  household: Household;
+  createdBy: User;
+  chore?: Chore;
+  recurrenceRule?: RecurrenceRule;
+  history: CalendarEventHistory[];
 }
 
 export interface EventReminder {
@@ -48,6 +60,7 @@ export interface CalendarEventHistory {
  * DTO for creating a new event.
  */
 export interface CreateEventDTO {
+  householdId: string;
   title: string;
   description?: string;
   startTime: Date;
@@ -60,6 +73,7 @@ export interface CreateEventDTO {
   isAllDay: boolean;
   location?: string;
   isPrivate: boolean;
+  reminders?: CreateReminderDTO[];
 }
 
 /**
@@ -74,9 +88,11 @@ export interface UpdateEventDTO {
   recurrenceRuleId?: string;
   customRecurrence?: DaysOfWeek[];
   category?: EventCategory;
+  status?: EventStatus;
   isAllDay?: boolean;
   location?: string;
   isPrivate?: boolean;
+  reminders?: CreateReminderDTO[];
 }
 
 /**
@@ -116,21 +132,17 @@ export interface UpdateCalendarEventDTO {
 // If you don't have a CreateReminderDTO, you might want to add it as well:
 export interface CreateReminderDTO {
   time: Date;
-  type: EventReminder;
+  type: EventReminderType;
 }
 
 export interface UpdateReminderDTO {
   time?: Date;
-  type?: EventReminder;
+  type?: EventReminderType;
 }
 
 export interface UpdateEventStatusDTO {
   status: EventStatus;
 }
-
-export type EventWithChore = Event & {
-  chore?: Chore;
-};
 
 export interface EventUpdateEvent {
   event: Event;

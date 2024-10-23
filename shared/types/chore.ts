@@ -85,7 +85,7 @@ export interface CreateChoreDTO {
   status?: ChoreStatus;
   recurrenceRuleId?: string;
   priority?: number;
-  assignedUserIds?: string[];
+  assignments?: CreateChoreAssignmentDTO[]; // Changed from assignedUserIds
   subtasks?: CreateSubtaskDTO[];
 }
 
@@ -99,7 +99,7 @@ export interface UpdateChoreDTO {
   status: ChoreStatus;
   recurrenceRuleId?: string;
   priority?: number;
-  assignedUserIds?: string[];
+  assignments?: UpdateChoreAssignmentDTO[]; // Changed from assignedUserIds
   subtasks?: UpdateSubtaskDTO[];
 }
 
@@ -118,6 +118,7 @@ export interface CreateSubtaskDTO {
  */
 export interface UpdateSubtaskDTO {
   title: string;
+  description?: string;
   status: SubtaskStatus;
 }
 
@@ -145,8 +146,23 @@ export interface CreateChoreHistoryDTO {
   changedById: string;
 }
 
+export interface CreateChoreAssignmentDTO {
+  userId: string;
+}
+
+export interface UpdateChoreAssignmentDTO {
+  userId: string;
+  completedAt?: Date;
+}
+
+// First, create a type for ChoreAssignmentWithUser
+export interface ChoreAssignmentWithUser extends ChoreAssignment {
+  user: User;
+}
+
+// Then update ChoreWithAssignees to use the assignments
 export type ChoreWithAssignees = Chore & {
-  assignedUsers: User[];
+  assignments: ChoreAssignmentWithUser[];
   subtasks: Subtask[];
 };
 

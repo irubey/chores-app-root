@@ -150,3 +150,8 @@ export interface ExpenseWithSplitsAndPaidBy extends Expense {
   splits: ExpenseSplitWithUser[];
   paidBy: User;
 }
+
+export interface TransactionWithDetails extends Transaction {
+  fromUser: User;
+  toUser: User;
+}

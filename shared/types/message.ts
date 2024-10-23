@@ -28,9 +28,6 @@ export interface Message {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  reactions?: Reaction[];
-  mentions?: Mention[];
-  reads?: MessageRead[];
 }
 
 export interface MessageWithDetails extends Message {
@@ -91,6 +88,7 @@ export interface CreateThreadDTO {
   householdId: string;
   authorId: string;
   title?: string;
+  participants: string[];
 }
 
 export interface UpdateThreadDTO {
@@ -103,11 +101,15 @@ export interface CreateMessageDTO {
   content: string;
   attachments?: CreateAttachmentDTO[];
   mentions?: string[];
+  reactions?: CreateReactionDTO[];
 }
 
 export interface UpdateMessageDTO {
   content?: string;
   attachments?: CreateAttachmentDTO[];
+  reactions?: CreateReactionDTO[];
+  mentions?: string[];
+  reads?: string[];
 }
 
 export interface CreateAttachmentDTO {
@@ -122,4 +124,6 @@ export interface CreateReactionDTO {
   type: ReactionType;
 }
 
-export type InviteUsersDTO = string[];
+export interface InviteUsersDTO {
+  userIds: string[];
+}

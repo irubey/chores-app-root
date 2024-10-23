@@ -1,5 +1,6 @@
 import { NotificationType } from "../enums";
 import { User } from "./user";
+import { Household } from "./household";
 
 export interface Notification {
   id: string;
@@ -47,4 +48,12 @@ export interface UpdateNotificationDTO {
  */
 export type NotificationWithUser = Notification & {
   user: User;
+};
+
+/**
+ * Extends the NotificationSettings interface to include user and household details.
+ */
+export type NotificationSettingsWithUserAndHousehold = NotificationSettings & {
+  user: User;
+  household: Household;
 };
