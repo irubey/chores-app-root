@@ -85,7 +85,7 @@ export interface CreateChoreDTO {
   status?: ChoreStatus;
   recurrenceRuleId?: string;
   priority?: number;
-  assignments?: CreateChoreAssignmentDTO[]; // Changed from assignedUserIds
+  assignments?: CreateChoreAssignmentDTO[];
   subtasks?: CreateSubtaskDTO[];
 }
 
@@ -99,7 +99,7 @@ export interface UpdateChoreDTO {
   status: ChoreStatus;
   recurrenceRuleId?: string;
   priority?: number;
-  assignments?: UpdateChoreAssignmentDTO[]; // Changed from assignedUserIds
+  assignments?: UpdateChoreAssignmentDTO[];
   subtasks?: UpdateSubtaskDTO[];
 }
 
