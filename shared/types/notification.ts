@@ -46,14 +46,15 @@ export interface UpdateNotificationDTO {
 /**
  * Extends the Notification interface to include user details.
  */
-export type NotificationWithUser = Notification & {
+export interface NotificationWithUser extends Notification {
   user: User;
-};
+}
 
 /**
  * Extends the NotificationSettings interface to include user and household details.
  */
-export type NotificationSettingsWithUserAndHousehold = NotificationSettings & {
+export interface NotificationSettingsWithUserAndHousehold
+  extends NotificationSettings {
   user: User;
   household: Household;
-};
+}

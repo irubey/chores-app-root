@@ -5,7 +5,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  profileImageURL: string;
+  profileImageURL?: string;
 }
 
 // Data Transfer Objects (DTOs)
