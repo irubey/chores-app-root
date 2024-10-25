@@ -1,6 +1,6 @@
 services:
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
@@ -21,11 +21,9 @@ services:
     networks:
       - app-network
     volumes: []
-      # Remove or comment out the Prisma volume mount for production
-      # - ./backend/prisma:/app/prisma
 
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:

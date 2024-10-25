@@ -10,14 +10,10 @@ services:
     volumes:
       - ../backend:/app
       - /app/node_modules
+      - /app/dist
+      - /app/.prisma
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgres://app_user:X7v$!Qk2u4mB@db:5432/userDb
-      HOST_DATABASE_URL: postgres://app_user:X7v$!Qk2u4mB@localhost:5433/userDb
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SESSION_SECRET: your_session_secret_here
-      ENABLE_PUSH_NOTIFICATIONS: false
       PORT: 3000
     env_file:
       - ../backend/.env
