@@ -1,0 +1,36 @@
+/frontend/src/components
+├── common
+│   ├── Avatar.tsx - Displays user avatars with optional fallback images or initials
+│   ├── Badge.tsx - Small indicators for statuses or counts, such as unread messages or notifications
+│   ├── Button.tsx - A versatile button used for actions like submitting forms, navigating pages, or triggering modals
+│   ├── Dropdown.tsx - Reusable dropdown menu for actions, navigation, or selecting options
+│   ├── Footer.tsx - Informational footer with links to help, settings, and legal information
+│   ├── Header.tsx - Global navigation bar containing logo, search bar, and user profile options
+│   ├── Icon.tsx - Integrated icon component using libraries like react-icons for consistent iconography
+│   ├── Input.tsx - Standard text input fields for user data entry, such as email, username, or search queries
+│   ├── Modal.tsx - Generic modal for displaying dialogs, confirmations, forms, or additional information
+│   ├── Notification.tsx - Displays toast notifications for success, error, warning, and info messages
+│   ├── Pagination.tsx - Controls for navigating through paginated content such as message threads or lists
+│   ├── Spinner.tsx - Indicates loading states during data fetching or processing
+│   ├── Tabs.tsx - Switchable sections within a page for organizing different content areas
+│   ├── Textarea.tsx - Multi-line text input for longer content entries like message bodies or descriptions
+│   ├── Tooltip.tsx - Provides additional information when users hover over or focus on an element
+│   └── Breadcrumb.tsx - Displays the user's current location within the app hierarchy for easy navigation
+├── messages
+│   ├── MessageInput.tsx - Text area for composing and sending new messages, including options for attachments and mentions
+│   ├── NewThreadModal.tsx - Modal for creating a new message thread, allowing users to add participants and set initial settings
+│   ├── SearchBar.tsx - Enables searching through threads or messages within the app
+│   ├── ThreadHeader.tsx - Displays thread-specific information such as title, participants, and available actions
+│   ├── ThreadList
+│   │   ├── EditableThreadTitle.tsx - Allows users to edit the title of a thread directly within the thread header
+│   │   ├── FilterOptions.tsx - Provides options to filter threads based on criteria like unread, recent, or specific users
+│   │   ├── ThreadItem.tsx - Represents an individual thread with summary information such as title, last message, and unread count
+│   │   └── ThreadList.tsx - Displays a list of all message threads, allowing users to browse and select different discussion threads
+│   └── MessageList
+│       ├── AttachmentPreview.tsx - Displays previews of attached files within messages, such as images or documents
+│       ├── MentionHighlight.tsx - Highlights mentioned users within messages and provides navigation to their profiles
+│       ├── MessageItem.tsx - Represents an individual message, displaying content, author information, timestamp, reactions, and attachments
+│       ├── MessageList.tsx - Displays all messages within a selected thread in a scrollable container
+│       ├── ReactionPicker.tsx - Allows users to add reactions (e.g., like, love) to messages
+│       └── ReadReceipt.tsx - Shows indicators for whether a message has been read by other participants
+└── ...

@@ -3,6 +3,8 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
     container_name: backend_dev
     ports:
       - "3000:3000"
@@ -12,11 +14,13 @@ services:
       - /app/node_modules
       - /app/dist
       - /app/.prisma
+      - ../backend/prisma/migrations:/app/prisma/migrations
     environment:
       NODE_ENV: development
       PORT: 3000
     env_file:
       - ../backend/.env
+      - .env
     depends_on:
       db:
         condition: service_healthy
