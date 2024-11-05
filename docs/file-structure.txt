@@ -1,0 +1,338 @@
+.
+├── backend
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── entrypoint.sh
+│   ├── eslint.config.mjs
+│   ├── irubey-chores-app-shared-1.0.3.tgz
+│   ├── jest.config.ts
+│   ├── logs
+│   │   ├── all.log
+│   │   └── error.log
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── prisma
+│   │   ├── migrations
+│   │   │   ├── 20240924182841_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241001191839_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241002213623_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241007175333_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241007211342_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241007212424_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20241028153601_
+│   │   │   │   └── migration.sql
+│   │   │   └── migration_lock.toml
+│   │   ├── schema.prisma
+│   │   └── seed.ts
+│   ├── src
+│   │   ├── app.ts
+│   │   ├── config
+│   │   │   ├── auth.ts
+│   │   │   ├── database.ts
+│   │   │   ├── passport.ts
+│   │   │   ├── prismaExtensions.ts
+│   │   │   └── socket.ts
+│   │   ├── controllers
+│   │   │   ├── AuthController.ts
+│   │   │   ├── CalendarEventController.ts
+│   │   │   ├── CalendarIntegrationController.ts
+│   │   │   ├── ChoreController.ts
+│   │   │   ├── ChoreEventController.ts
+│   │   │   ├── ExpenseController.ts
+│   │   │   ├── HouseholdController.ts
+│   │   │   ├── MessageController.ts
+│   │   │   ├── NotificationController.ts
+│   │   │   ├── SubtaskController.ts
+│   │   │   ├── ThreadController.ts
+│   │   │   ├── TransactionController.ts
+│   │   │   └── UserController.ts
+│   │   ├── jobs
+│   │   │   ├── choreSchedulerJob.ts
+│   │   │   ├── index.ts
+│   │   │   ├── notificationJob.ts
+│   │   │   └── reminderJob.ts
+│   │   ├── middlewares
+│   │   │   ├── authMiddleware.ts
+│   │   │   ├── errorHandler.ts
+│   │   │   ├── rateLimit.ts
+│   │   │   ├── rbacMiddleware.ts
+│   │   │   ├── socketAuthMiddleware.ts
+│   │   │   └── validationMiddleware.ts
+│   │   ├── routes
+│   │   │   ├── auth-routes.ts
+│   │   │   ├── calendar-event-routes.ts
+│   │   │   ├── calendar-integration-routes.ts
+│   │   │   ├── chore-event-routes.ts
+│   │   │   ├── chore-routes.ts
+│   │   │   ├── expense-routes.ts
+│   │   │   ├── household-routes.ts
+│   │   │   ├── index.ts
+│   │   │   ├── message-routes.ts
+│   │   │   ├── notification-routes.ts
+│   │   │   ├── subtask-routes.ts
+│   │   │   ├── thread-routes.ts
+│   │   │   ├── transaction-routes.ts
+│   │   │   └── user-routes.ts
+│   │   ├── services
+│   │   │   ├── authService.ts
+│   │   │   ├── calendarEventService.ts
+│   │   │   ├── calendarIntegrationService.ts
+│   │   │   ├── choreEventService.ts
+│   │   │   ├── choreService.ts
+│   │   │   ├── expenseService.ts
+│   │   │   ├── householdService.ts
+│   │   │   ├── messages
+│   │   │   │   ├── attachmentService.ts
+│   │   │   │   ├── mentionService.ts
+│   │   │   │   ├── messageService.ts
+│   │   │   │   ├── pollService.ts
+│   │   │   │   └── reactionService.ts
+│   │   │   ├── notificationService.ts
+│   │   │   ├── pushNotificationService.ts
+│   │   │   ├── subtaskService.ts
+│   │   │   ├── threadService.ts
+│   │   │   ├── transactionService.ts
+│   │   │   └── userService.ts
+│   │   ├── sockets
+│   │   │   └── index.ts
+│   │   ├── types
+│   │   │   └── index.ts
+│   │   ├── uploads
+│   │   │   └── receipts
+│   │   └── utils
+│   │       ├── asyncHandler.ts
+│   │       ├── emailUtils.ts
+│   │       ├── fileUpload.ts
+│   │       ├── logger.ts
+│   │       ├── passwordUtils.ts
+│   │       ├── tokenUtils.ts
+│   │       ├── transformers
+│   │       │   ├── choreTransformer.ts
+│   │       │   ├── eventTransformer.ts
+│   │       │   ├── expenseTransformer.ts
+│   │       │   ├── householdTransformer.ts
+│   │       │   ├── messageTransformer
+│   │       │   │   ├── attachment.ts
+│   │       │   │   ├── index.ts
+│   │       │   │   ├── mention.ts
+│   │       │   │   ├── message.ts
+│   │       │   │   ├── poll.ts
+│   │       │   │   ├── reaction.ts
+│   │       │   │   ├── read.ts
+│   │       │   │   └── thread.ts
+│   │       │   ├── notificationTransformer.ts
+│   │       │   ├── recurrenceRuleTransformer.ts
+│   │       │   ├── transformerPrismaTypes.ts
+│   │       │   └── userTransformer.ts
+│   │       └── validationSchemas.ts
+│   ├── tests
+│   │   ├── authController.test.ts
+│   │   └── choreController.test.ts
+│   ├── tsconfig.build.json
+│   └── tsconfig.json
+├── docker
+│   ├── docker-compose.dev.yml
+│   └── docker-compose.prod.yml
+├── docker-compose.yml
+├── docs
+│   ├── file-structure.txt
+│   ├── full_plan.md
+│   └── instructions.md
+├── frontend
+│   ├── README.md
+│   ├── next-env.d.ts
+│   ├── next.config.mjs
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── icons
+│   │   │   ├── apple-icon.png
+│   │   │   ├── chores-icon.png
+│   │   │   ├── facebook-icon.svg
+│   │   │   ├── google-icon.png
+│   │   │   ├── household-icon.png
+│   │   │   └── preferences-icon.png
+│   │   └── logo.png
+│   ├── src
+│   │   ├── app
+│   │   │   ├── (auth)
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── login
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── register
+│   │   │   │       └── page.tsx
+│   │   │   ├── calendar
+│   │   │   │   └── page.tsx
+│   │   │   ├── chores
+│   │   │   │   ├── [choreId]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── dashboard
+│   │   │   │   └── page.tsx
+│   │   │   ├── finances
+│   │   │   │   ├── debts
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── expenses
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── messages
+│   │   │   │   ├── [threadId]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── settings
+│   │   │       └── page.tsx
+│   │   ├── components
+│   │   │   ├── auth
+│   │   │   │   └── OAuthButtons.tsx
+│   │   │   ├── calendar
+│   │   │   │   ├── BulkActionHandler.tsx
+│   │   │   │   ├── CalendarEventItem.tsx
+│   │   │   │   ├── CalendarHeader.tsx
+│   │   │   │   ├── CalendarSync.tsx
+│   │   │   │   ├── CalendarToolbar.tsx
+│   │   │   │   ├── ErrorNotification.tsx
+│   │   │   │   ├── EventFilter.tsx
+│   │   │   │   ├── EventList.tsx
+│   │   │   │   ├── EventModal.tsx
+│   │   │   │   ├── PersonalCalendarLink.tsx
+│   │   │   │   ├── SharedCalendar.tsx
+│   │   │   │   └── SyncStatusIndicator.tsx
+│   │   │   ├── chores
+│   │   │   │   ├── ChoreForm.tsx
+│   │   │   │   ├── ChoreItem.tsx
+│   │   │   │   ├── ChoreList.tsx
+│   │   │   │   └── SubtaskList.tsx
+│   │   │   ├── common
+│   │   │   │   ├── Avatar.tsx
+│   │   │   │   ├── Badge.tsx
+│   │   │   │   ├── Breadcrumb.tsx
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Card.tsx
+│   │   │   │   ├── Dropdown.tsx
+│   │   │   │   ├── Footer.tsx
+│   │   │   │   ├── Header.tsx
+│   │   │   │   ├── Icon.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   ├── Modal.tsx
+│   │   │   │   ├── Notification.tsx
+│   │   │   │   ├── Pagination.tsx
+│   │   │   │   ├── Spinner.tsx
+│   │   │   │   ├── Tabs.tsx
+│   │   │   │   ├── Textarea.tsx
+│   │   │   │   └── Tooltip.tsx
+│   │   │   ├── dashboard
+│   │   │   │   ├── DashboardSummary.tsx
+│   │   │   │   ├── QuickActionPanel.tsx
+│   │   │   │   ├── RecentActivityFeed.tsx
+│   │   │   │   └── UpcomingChores.tsx
+│   │   │   ├── finances
+│   │   │   │   ├── DebtSummary.tsx
+│   │   │   │   ├── ExpenseForm.tsx
+│   │   │   │   ├── ExpenseItem.tsx
+│   │   │   │   ├── ExpenseList.tsx
+│   │   │   │   └── ReciptUploader.tsx
+│   │   │   ├── household
+│   │   │   │   ├── HouseholdMemberList.tsx
+│   │   │   │   ├── HouseholdSelector.tsx
+│   │   │   │   └── InviteButton.tsx
+│   │   │   ├── layout
+│   │   │   │   ├── Footer.tsx
+│   │   │   │   └── Header.tsx
+│   │   │   ├── messages
+│   │   │   │   ├── MessageInput.tsx
+│   │   │   │   ├── MessageList
+│   │   │   │   │   ├── AttachmentPreview.tsx
+│   │   │   │   │   ├── MentionHighlight.tsx
+│   │   │   │   │   ├── MessageItem.tsx
+│   │   │   │   │   ├── MessageList.tsx
+│   │   │   │   │   ├── ReactionPicker.tsx
+│   │   │   │   │   └── ReadReceipt.tsx
+│   │   │   │   ├── NewThreadModal.tsx
+│   │   │   │   ├── SearchBar.tsx
+│   │   │   │   ├── ThreadHeader.tsx
+│   │   │   │   └── ThreadList
+│   │   │   │       ├── EditableThreadTitle.tsx
+│   │   │   │       ├── FilterOptions.tsx
+│   │   │   │       ├── ThreadItem.tsx
+│   │   │   │       └── ThreadList.tsx
+│   │   │   └── notifications
+│   │   │       └── EventNotification.tsx
+│   │   ├── contexts
+│   │   │   ├── SocketContext.tsx
+│   │   │   └── ThemeContext.tsx
+│   │   ├── hooks
+│   │   │   ├── index.ts
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useCalendar.ts
+│   │   │   ├── useChores.ts
+│   │   │   ├── useFinances.ts
+│   │   │   ├── useHousehold.ts
+│   │   │   ├── useMessages.ts
+│   │   │   └── useNotifications.ts
+│   │   ├── lib
+│   │   │   ├── api
+│   │   │   │   ├── apiClient.ts
+│   │   │   │   ├── axiosInstance.ts
+│   │   │   │   ├── baseClient.ts
+│   │   │   │   ├── errors.ts
+│   │   │   │   ├── interceptors.ts
+│   │   │   │   ├── logger.ts
+│   │   │   │   ├── retry.ts
+│   │   │   │   └── services
+│   │   │   │       ├── authService.ts
+│   │   │   │       ├── calendarService.ts
+│   │   │   │       ├── choreService.ts
+│   │   │   │       ├── financeService.ts
+│   │   │   │       ├── householdService.ts
+│   │   │   │       ├── notificationService.ts
+│   │   │   │       ├── threadService.ts
+│   │   │   │       ├── tokenService.ts
+│   │   │   │       └── userService.ts
+│   │   │   ├── socketClient.ts
+│   │   │   └── utils.ts
+│   │   ├── store
+│   │   │   ├── slices
+│   │   │   │   ├── authSlice.ts
+│   │   │   │   ├── calendarSlice.ts
+│   │   │   │   ├── choresSlice.ts
+│   │   │   │   ├── financesSlice.ts
+│   │   │   │   ├── householdSlice.ts
+│   │   │   │   ├── messagesSlice.ts
+│   │   │   │   ├── notificationsSlice.ts
+│   │   │   │   └── threadSlice.ts
+│   │   │   ├── store.ts
+│   │   │   └── storeDispatch.ts
+│   │   ├── styles
+│   │   │   └── globals.css
+│   │   ├── test
+│   │   └── types
+│   │       ├── api.ts
+│   │       ├── attachment.ts
+│   │       ├── chore.ts
+│   │       ├── event.ts
+│   │       ├── expense.ts
+│   │       ├── household.ts
+│   │       ├── message.ts
+│   │       ├── notification.ts
+│   │       ├── oauth.ts
+│   │       ├── shared.d.ts
+│   │       ├── socket.ts
+│   │       ├── subtask.ts
+│   │       ├── upload.ts
+│   │       └── user.ts
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+├── package-lock.json
+└── package.json
+
+71 directories, 265 files
