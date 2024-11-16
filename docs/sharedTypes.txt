@@ -1,0 +1,40 @@
+.
+├── README.md
+├── irubey-chores-app-shared-1.0.1.tgz
+├── package-lock.json
+├── package.json
+├── src
+│   ├── enums
+│   │   ├── chores.ts
+│   │   ├── common.ts
+│   │   ├── events.ts
+│   │   ├── expenses.ts
+│   │   ├── household.ts
+│   │   ├── index.ts
+│   │   ├── messages.ts
+│   │   ├── notifications.ts
+│   │   ├── poll.ts
+│   │   └── users.ts
+│   ├── index.ts
+│   ├── interfaces
+│   │   ├── apiResponse.ts
+│   │   ├── auth.ts
+│   │   ├── choreTemplate.ts
+│   │   ├── dashboardSummary.ts
+│   │   ├── index.ts
+│   │   └── pagination.ts
+│   └── types
+│       ├── chore.ts
+│       ├── event.ts
+│       ├── expense.ts
+│       ├── household.ts
+│       ├── index.ts
+│       ├── message.ts
+│       ├── notification.ts
+│       ├── socketEvents.ts
+│       ├── thread.ts
+│       ├── user.ts
+│       └── utils.ts
+└── tsconfig.json
+
+5 directories, 33 files

@@ -4,7 +4,6 @@
 │   ├── README.md
 │   ├── entrypoint.sh
 │   ├── eslint.config.mjs
-│   ├── irubey-chores-app-shared-1.0.3.tgz
 │   ├── jest.config.ts
 │   ├── logs
 │   │   ├── all.log
@@ -13,19 +12,7 @@
 │   ├── package.json
 │   ├── prisma
 │   │   ├── migrations
-│   │   │   ├── 20240924182841_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241001191839_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241002213623_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241007175333_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241007211342_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241007212424_init
-│   │   │   │   └── migration.sql
-│   │   │   ├── 20241028153601_
+│   │   │   ├── 20241106173459_init
 │   │   │   │   └── migration.sql
 │   │   │   └── migration_lock.toml
 │   │   ├── schema.prisma
@@ -111,6 +98,7 @@
 │   │       ├── fileUpload.ts
 │   │       ├── logger.ts
 │   │       ├── passwordUtils.ts
+│   │       ├── servicesUtils.ts
 │   │       ├── tokenUtils.ts
 │   │       ├── transformers
 │   │       │   ├── choreTransformer.ts
@@ -143,9 +131,55 @@
 ├── docs
 │   ├── file-structure.txt
 │   ├── full_plan.md
-│   └── instructions.md
+│   ├── instructions.md
+│   ├── project_structure.txt
+│   └── testingStrategy.md
 ├── frontend
 │   ├── README.md
+│   ├── __tests__
+│   │   ├── components
+│   │   ├── features
+│   │   ├── helpers
+│   │   │   ├── assertions
+│   │   │   │   ├── componentAssertions.ts
+│   │   │   │   └── stateAssertions.ts
+│   │   │   ├── factories
+│   │   │   │   ├── householdFactory.ts
+│   │   │   │   ├── messageFactory.ts
+│   │   │   │   ├── threadFactory.ts
+│   │   │   │   └── userFactory.ts
+│   │   │   ├── mocks
+│   │   │   │   ├── apiMocks.ts
+│   │   │   │   ├── hookMocks.ts
+│   │   │   │   ├── routerMocks.ts
+│   │   │   │   └── serviceMocks.ts
+│   │   │   ├── scenarios
+│   │   │   │   ├── messageScenarios.ts
+│   │   │   │   └── threadScenarios.ts
+│   │   │   ├── setup
+│   │   │   │   ├── mockData.ts
+│   │   │   │   ├── renderHelpers.ts
+│   │   │   │   └── testStore.ts
+│   │   │   └── utils
+│   │   │       ├── dateUtils.ts
+│   │   │       ├── testLogger.ts
+│   │   │       └── testUtils.ts
+│   │   ├── hooks
+│   │   ├── services
+│   │   │   ├── authService.test.ts
+│   │   │   ├── calendarService.test.ts
+│   │   │   ├── choreService.test.ts
+│   │   │   ├── financeService.test.ts
+│   │   │   ├── householdService.test.ts
+│   │   │   ├── notificationService.test.ts
+│   │   │   ├── threadService.test.ts
+│   │   │   ├── tokenService.test.ts
+│   │   │   └── userService.test.ts
+│   │   └── store
+│   │       └── slices
+│   ├── frontend_structure.txt
+│   ├── jest.config.ts
+│   ├── jest.setup.ts
 │   ├── next-env.d.ts
 │   ├── next.config.mjs
 │   ├── package-lock.json
@@ -192,6 +226,10 @@
 │   │   │   └── settings
 │   │   │       └── page.tsx
 │   │   ├── components
+│   │   │   ├── __tests__
+│   │   │   │   ├── ComponentHierarchy.test.tsx
+│   │   │   │   ├── MessageList.test.tsx
+│   │   │   │   └── ThreadList.test.tsx
 │   │   │   ├── auth
 │   │   │   │   └── OAuthButtons.tsx
 │   │   │   ├── calendar
@@ -253,12 +291,16 @@
 │   │   │   │   ├── MessageList
 │   │   │   │   │   ├── AttachmentPreview.tsx
 │   │   │   │   │   ├── MentionHighlight.tsx
+│   │   │   │   │   ├── MessageActions.tsx
+│   │   │   │   │   ├── MessageAttachments.tsx
 │   │   │   │   │   ├── MessageItem.tsx
 │   │   │   │   │   ├── MessageList.tsx
+│   │   │   │   │   ├── MessageMentions.tsx
+│   │   │   │   │   ├── MessagePoll.tsx
+│   │   │   │   │   ├── MessageReactions.tsx
 │   │   │   │   │   ├── ReactionPicker.tsx
 │   │   │   │   │   └── ReadReceipt.tsx
 │   │   │   │   ├── NewThreadModal.tsx
-│   │   │   │   ├── SearchBar.tsx
 │   │   │   │   ├── ThreadHeader.tsx
 │   │   │   │   └── ThreadList
 │   │   │   │       ├── EditableThreadTitle.tsx
@@ -278,12 +320,15 @@
 │   │   │   ├── useFinances.ts
 │   │   │   ├── useHousehold.ts
 │   │   │   ├── useMessages.ts
-│   │   │   └── useNotifications.ts
+│   │   │   ├── useNotifications.ts
+│   │   │   └── useThreads.ts
 │   │   ├── lib
 │   │   │   ├── api
 │   │   │   │   ├── apiClient.ts
 │   │   │   │   ├── axiosInstance.ts
 │   │   │   │   ├── baseClient.ts
+│   │   │   │   ├── errors
+│   │   │   │   │   └── apiErrors.ts
 │   │   │   │   ├── errors.ts
 │   │   │   │   ├── interceptors.ts
 │   │   │   │   ├── logger.ts
@@ -302,6 +347,9 @@
 │   │   │   └── utils.ts
 │   │   ├── store
 │   │   │   ├── slices
+│   │   │   │   ├── __tests__
+│   │   │   │   │   ├── messagesSlice.test.ts
+│   │   │   │   │   └── threadSlice.test.ts
 │   │   │   │   ├── authSlice.ts
 │   │   │   │   ├── calendarSlice.ts
 │   │   │   │   ├── choresSlice.ts
@@ -315,24 +363,89 @@
 │   │   ├── styles
 │   │   │   └── globals.css
 │   │   ├── test
-│   │   └── types
-│   │       ├── api.ts
-│   │       ├── attachment.ts
-│   │       ├── chore.ts
-│   │       ├── event.ts
-│   │       ├── expense.ts
-│   │       ├── household.ts
-│   │       ├── message.ts
-│   │       ├── notification.ts
-│   │       ├── oauth.ts
-│   │       ├── shared.d.ts
-│   │       ├── socket.ts
-│   │       ├── subtask.ts
-│   │       ├── upload.ts
-│   │       └── user.ts
+│   │   │   ├── globals.ts
+│   │   │   ├── jest.d.ts
+│   │   │   └── setup.ts
+│   │   ├── types
+│   │   │   └── shared.d.ts
+│   │   └── utils
+│   │       └── test-utils.tsx
 │   ├── tailwind.config.ts
+│   ├── tsconfig.jest.json
 │   └── tsconfig.json
-├── package-lock.json
-└── package.json
+└── mobile
+    ├── App.tsx
+    ├── Gemfile
+    ├── Gemfile.lock
+    ├── README.md
+    ├── __tests__
+    │   └── App.test.tsx
+    ├── android
+    │   ├── app
+    │   │   ├── build.gradle
+    │   │   ├── debug.keystore
+    │   │   ├── proguard-rules.pro
+    │   │   └── src
+    │   │       ├── debug
+    │   │       │   └── AndroidManifest.xml
+    │   │       └── main
+    │   │           ├── AndroidManifest.xml
+    │   │           ├── java
+    │   │           │   └── com
+    │   │           │       └── myapp
+    │   │           │           ├── MainActivity.kt
+    │   │           │           └── MainApplication.kt
+    │   │           └── res
+    │   │               ├── drawable
+    │   │               │   └── rn_edit_text_material.xml
+    │   │               ├── mipmap-hdpi
+    │   │               │   ├── ic_launcher.png
+    │   │               │   └── ic_launcher_round.png
+    │   │               ├── mipmap-mdpi
+    │   │               │   ├── ic_launcher.png
+    │   │               │   └── ic_launcher_round.png
+    │   │               ├── mipmap-xhdpi
+    │   │               │   ├── ic_launcher.png
+    │   │               │   └── ic_launcher_round.png
+    │   │               ├── mipmap-xxhdpi
+    │   │               │   ├── ic_launcher.png
+    │   │               │   └── ic_launcher_round.png
+    │   │               ├── mipmap-xxxhdpi
+    │   │               │   ├── ic_launcher.png
+    │   │               │   └── ic_launcher_round.png
+    │   │               └── values
+    │   │                   ├── strings.xml
+    │   │                   └── styles.xml
+    │   └── gradle
+    │       └── wrapper
+    │           ├── gradle-wrapper.jar
+    │           └── gradle-wrapper.properties
+    ├── app.json
+    ├── babel.config.js
+    ├── index.js
+    ├── ios
+    │   ├── myApp
+    │   │   ├── AppDelegate.h
+    │   │   ├── AppDelegate.mm
+    │   │   ├── Images.xcassets
+    │   │   │   ├── AppIcon.appiconset
+    │   │   │   │   └── Contents.json
+    │   │   │   └── Contents.json
+    │   │   ├── Info.plist
+    │   │   ├── LaunchScreen.storyboard
+    │   │   ├── PrivacyInfo.xcprivacy
+    │   │   └── main.m
+    │   └── myAppTests
+    │       ├── Info.plist
+    │       └── myAppTests.m
+    ├── jest.config.js
+    ├── metro.config.js
+    ├── package-lock.json
+    ├── package.json
+    ├── src
+    │   └── screens
+    │       ├── DetailsScreen.tsx
+    │       └── Homescreen.tsx
+    └── tsconfig.json
 
-71 directories, 265 files
+110 directories, 339 files
