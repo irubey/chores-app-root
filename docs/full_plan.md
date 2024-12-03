@@ -248,6 +248,96 @@
 - Target uptime of 99.9% excluding scheduled maintenance.
 - Plan for redundancy and failover mechanisms.
 
+## System Architecture
+
+### State Management
+
+#### Global Context Structure
+
+1. **User Context (`UserContext.tsx`)**
+
+   - Handles authentication state
+   - User profile information
+   - Login/logout functionality
+   - User preferences
+   - Session management
+
+2. **Households Context (`HouseholdsContext.tsx`)**
+
+   - Manages household data
+   - Selected households
+   - Current household
+   - Household members
+   - Household roles and permissions
+
+3. **Feature-specific Contexts**
+   Each major feature will have its own context provider that subscribes to the global contexts:
+
+   - **Messages Context**
+
+     - Thread discussions
+     - Real-time messages
+     - File attachments
+     - Message reactions
+     - Polls
+
+   - **Finances Context**
+
+     - Shared expenses
+     - Debt tracking
+     - Payment history
+     - Receipt storage
+
+   - **Chores Context**
+
+     - Task checklists
+     - Assignments
+     - Progress tracking
+     - Rotation schedules
+
+   - **Calendar Context**
+     - Event management
+     - Schedule coordination
+     - Calendar sync
+     - Reminders
+
+### Data Flow
+
+1. **Context Updates**
+
+   - Contexts update based on route/page changes
+   - Data is fetched and cached at the context level
+   - Real-time updates via WebSocket connections
+   - Optimistic updates for better UX
+
+2. **Page-Level Data Management**
+   - Pages subscribe to relevant contexts
+   - Local state for UI-specific data
+   - Form state management
+   - Temporary data storage
+
+### Component Architecture
+
+1. **Layout Components**
+
+   - Wrapped in global context providers
+   - Handle authentication checks
+   - Manage navigation state
+   - Theme management
+
+2. **Feature Components**
+
+   - Subscribe to feature-specific contexts
+   - Handle local state
+   - Manage UI interactions
+   - Form handling
+
+3. **Shared Components**
+   - Reusable UI elements
+   - Context-aware when needed
+   - Theme-aware styling
+   - Accessibility features
+
 ## Potential Improvements
 
 - **Enhanced Chore Management**:
