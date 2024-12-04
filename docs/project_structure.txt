@@ -5,9 +5,6 @@
 │   ├── entrypoint.sh
 │   ├── eslint.config.mjs
 │   ├── jest.config.ts
-│   ├── logs
-│   │   ├── all.log
-│   │   └── error.log
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── prisma
@@ -129,54 +126,11 @@
 │   └── docker-compose.prod.yml
 ├── docker-compose.yml
 ├── docs
-│   ├── file-structure.txt
 │   ├── full_plan.md
 │   ├── instructions.md
-│   ├── project_structure.txt
-│   └── testingStrategy.md
+│   └── project_structure.txt
 ├── frontend
 │   ├── README.md
-│   ├── __tests__
-│   │   ├── components
-│   │   ├── features
-│   │   ├── helpers
-│   │   │   ├── assertions
-│   │   │   │   ├── componentAssertions.ts
-│   │   │   │   └── stateAssertions.ts
-│   │   │   ├── factories
-│   │   │   │   ├── householdFactory.ts
-│   │   │   │   ├── messageFactory.ts
-│   │   │   │   ├── threadFactory.ts
-│   │   │   │   └── userFactory.ts
-│   │   │   ├── mocks
-│   │   │   │   ├── apiMocks.ts
-│   │   │   │   ├── hookMocks.ts
-│   │   │   │   ├── routerMocks.ts
-│   │   │   │   └── serviceMocks.ts
-│   │   │   ├── scenarios
-│   │   │   │   ├── messageScenarios.ts
-│   │   │   │   └── threadScenarios.ts
-│   │   │   ├── setup
-│   │   │   │   ├── mockData.ts
-│   │   │   │   ├── renderHelpers.ts
-│   │   │   │   └── testStore.ts
-│   │   │   └── utils
-│   │   │       ├── dateUtils.ts
-│   │   │       ├── testLogger.ts
-│   │   │       └── testUtils.ts
-│   │   ├── hooks
-│   │   ├── services
-│   │   │   ├── authService.test.ts
-│   │   │   ├── calendarService.test.ts
-│   │   │   ├── choreService.test.ts
-│   │   │   ├── financeService.test.ts
-│   │   │   ├── householdService.test.ts
-│   │   │   ├── notificationService.test.ts
-│   │   │   ├── threadService.test.ts
-│   │   │   ├── tokenService.test.ts
-│   │   │   └── userService.test.ts
-│   │   └── store
-│   │       └── slices
 │   ├── frontend_structure.txt
 │   ├── jest.config.ts
 │   ├── jest.setup.ts
@@ -217,6 +171,9 @@
 │   │   │   │   ├── expenses
 │   │   │   │   │   └── page.tsx
 │   │   │   │   └── page.tsx
+│   │   │   ├── household
+│   │   │   │   └── [id]
+│   │   │   │       └── page.tsx
 │   │   │   ├── layout.tsx
 │   │   │   ├── messages
 │   │   │   │   ├── [threadId]
@@ -226,10 +183,7 @@
 │   │   │   └── settings
 │   │   │       └── page.tsx
 │   │   ├── components
-│   │   │   ├── __tests__
-│   │   │   │   ├── ComponentHierarchy.test.tsx
-│   │   │   │   ├── MessageList.test.tsx
-│   │   │   │   └── ThreadList.test.tsx
+│   │   │   ├── ErrorBoundary.tsx
 │   │   │   ├── auth
 │   │   │   │   └── OAuthButtons.tsx
 │   │   │   ├── calendar
@@ -258,12 +212,12 @@
 │   │   │   │   ├── Card.tsx
 │   │   │   │   ├── Dropdown.tsx
 │   │   │   │   ├── Footer.tsx
-│   │   │   │   ├── Header.tsx
 │   │   │   │   ├── Icon.tsx
 │   │   │   │   ├── Input.tsx
 │   │   │   │   ├── Modal.tsx
 │   │   │   │   ├── Notification.tsx
 │   │   │   │   ├── Pagination.tsx
+│   │   │   │   ├── Select.tsx
 │   │   │   │   ├── Spinner.tsx
 │   │   │   │   ├── Tabs.tsx
 │   │   │   │   ├── Textarea.tsx
@@ -280,9 +234,14 @@
 │   │   │   │   ├── ExpenseList.tsx
 │   │   │   │   └── ReciptUploader.tsx
 │   │   │   ├── household
-│   │   │   │   ├── HouseholdMemberList.tsx
+│   │   │   │   ├── CreateHouseholdButton.tsx
+│   │   │   │   ├── HouseholdCard.tsx
+│   │   │   │   ├── HouseholdCardContainer.tsx
+│   │   │   │   ├── HouseholdCardPresentation.tsx
 │   │   │   │   ├── HouseholdSelector.tsx
-│   │   │   │   └── InviteButton.tsx
+│   │   │   │   ├── HouseholdStats.tsx
+│   │   │   │   ├── InviteButton.tsx
+│   │   │   │   └── MembersList.tsx
 │   │   │   ├── layout
 │   │   │   │   ├── Footer.tsx
 │   │   │   │   └── Header.tsx
@@ -310,8 +269,10 @@
 │   │   │   └── notifications
 │   │   │       └── EventNotification.tsx
 │   │   ├── contexts
+│   │   │   ├── HouseholdsContext.tsx
 │   │   │   ├── SocketContext.tsx
-│   │   │   └── ThemeContext.tsx
+│   │   │   ├── ThemeContext.tsx
+│   │   │   └── UserContext.tsx
 │   │   ├── hooks
 │   │   │   ├── index.ts
 │   │   │   ├── useAuth.ts
@@ -319,6 +280,7 @@
 │   │   │   ├── useChores.ts
 │   │   │   ├── useFinances.ts
 │   │   │   ├── useHousehold.ts
+│   │   │   ├── useMessageActions.ts
 │   │   │   ├── useMessages.ts
 │   │   │   ├── useNotifications.ts
 │   │   │   └── useThreads.ts
@@ -341,20 +303,14 @@
 │   │   │   │       ├── householdService.ts
 │   │   │   │       ├── notificationService.ts
 │   │   │   │       ├── threadService.ts
-│   │   │   │       ├── tokenService.ts
 │   │   │   │       └── userService.ts
 │   │   │   ├── socketClient.ts
 │   │   │   └── utils.ts
 │   │   ├── store
 │   │   │   ├── slices
-│   │   │   │   ├── __tests__
-│   │   │   │   │   ├── messagesSlice.test.ts
-│   │   │   │   │   └── threadSlice.test.ts
-│   │   │   │   ├── authSlice.ts
 │   │   │   │   ├── calendarSlice.ts
 │   │   │   │   ├── choresSlice.ts
 │   │   │   │   ├── financesSlice.ts
-│   │   │   │   ├── householdSlice.ts
 │   │   │   │   ├── messagesSlice.ts
 │   │   │   │   ├── notificationsSlice.ts
 │   │   │   │   └── threadSlice.ts
@@ -373,79 +329,115 @@
 │   ├── tailwind.config.ts
 │   ├── tsconfig.jest.json
 │   └── tsconfig.json
-└── mobile
-    ├── App.tsx
-    ├── Gemfile
-    ├── Gemfile.lock
+├── mobile
+│   ├── App.tsx
+│   ├── Gemfile
+│   ├── Gemfile.lock
+│   ├── README.md
+│   ├── android
+│   │   ├── app
+│   │   │   ├── build.gradle
+│   │   │   ├── debug.keystore
+│   │   │   ├── proguard-rules.pro
+│   │   │   └── src
+│   │   │       ├── debug
+│   │   │       │   └── AndroidManifest.xml
+│   │   │       └── main
+│   │   │           ├── AndroidManifest.xml
+│   │   │           ├── java
+│   │   │           │   └── com
+│   │   │           │       └── myapp
+│   │   │           │           ├── MainActivity.kt
+│   │   │           │           └── MainApplication.kt
+│   │   │           └── res
+│   │   │               ├── drawable
+│   │   │               │   └── rn_edit_text_material.xml
+│   │   │               ├── mipmap-hdpi
+│   │   │               │   ├── ic_launcher.png
+│   │   │               │   └── ic_launcher_round.png
+│   │   │               ├── mipmap-mdpi
+│   │   │               │   ├── ic_launcher.png
+│   │   │               │   └── ic_launcher_round.png
+│   │   │               ├── mipmap-xhdpi
+│   │   │               │   ├── ic_launcher.png
+│   │   │               │   └── ic_launcher_round.png
+│   │   │               ├── mipmap-xxhdpi
+│   │   │               │   ├── ic_launcher.png
+│   │   │               │   └── ic_launcher_round.png
+│   │   │               ├── mipmap-xxxhdpi
+│   │   │               │   ├── ic_launcher.png
+│   │   │               │   └── ic_launcher_round.png
+│   │   │               └── values
+│   │   │                   ├── strings.xml
+│   │   │                   └── styles.xml
+│   │   └── gradle
+│   │       └── wrapper
+│   │           ├── gradle-wrapper.jar
+│   │           └── gradle-wrapper.properties
+│   ├── app.json
+│   ├── babel.config.js
+│   ├── index.js
+│   ├── ios
+│   │   ├── myApp
+│   │   │   ├── AppDelegate.h
+│   │   │   ├── AppDelegate.mm
+│   │   │   ├── Images.xcassets
+│   │   │   │   ├── AppIcon.appiconset
+│   │   │   │   │   └── Contents.json
+│   │   │   │   └── Contents.json
+│   │   │   ├── Info.plist
+│   │   │   ├── LaunchScreen.storyboard
+│   │   │   ├── PrivacyInfo.xcprivacy
+│   │   │   └── main.m
+│   │   └── myAppTests
+│   │       ├── Info.plist
+│   │       └── myAppTests.m
+│   ├── jest.config.js
+│   ├── metro.config.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── src
+│   │   └── screens
+│   │       ├── DetailsScreen.tsx
+│   │       └── Homescreen.tsx
+│   └── tsconfig.json
+└── shared
     ├── README.md
-    ├── __tests__
-    │   └── App.test.tsx
-    ├── android
-    │   ├── app
-    │   │   ├── build.gradle
-    │   │   ├── debug.keystore
-    │   │   ├── proguard-rules.pro
-    │   │   └── src
-    │   │       ├── debug
-    │   │       │   └── AndroidManifest.xml
-    │   │       └── main
-    │   │           ├── AndroidManifest.xml
-    │   │           ├── java
-    │   │           │   └── com
-    │   │           │       └── myapp
-    │   │           │           ├── MainActivity.kt
-    │   │           │           └── MainApplication.kt
-    │   │           └── res
-    │   │               ├── drawable
-    │   │               │   └── rn_edit_text_material.xml
-    │   │               ├── mipmap-hdpi
-    │   │               │   ├── ic_launcher.png
-    │   │               │   └── ic_launcher_round.png
-    │   │               ├── mipmap-mdpi
-    │   │               │   ├── ic_launcher.png
-    │   │               │   └── ic_launcher_round.png
-    │   │               ├── mipmap-xhdpi
-    │   │               │   ├── ic_launcher.png
-    │   │               │   └── ic_launcher_round.png
-    │   │               ├── mipmap-xxhdpi
-    │   │               │   ├── ic_launcher.png
-    │   │               │   └── ic_launcher_round.png
-    │   │               ├── mipmap-xxxhdpi
-    │   │               │   ├── ic_launcher.png
-    │   │               │   └── ic_launcher_round.png
-    │   │               └── values
-    │   │                   ├── strings.xml
-    │   │                   └── styles.xml
-    │   └── gradle
-    │       └── wrapper
-    │           ├── gradle-wrapper.jar
-    │           └── gradle-wrapper.properties
-    ├── app.json
-    ├── babel.config.js
-    ├── index.js
-    ├── ios
-    │   ├── myApp
-    │   │   ├── AppDelegate.h
-    │   │   ├── AppDelegate.mm
-    │   │   ├── Images.xcassets
-    │   │   │   ├── AppIcon.appiconset
-    │   │   │   │   └── Contents.json
-    │   │   │   └── Contents.json
-    │   │   ├── Info.plist
-    │   │   ├── LaunchScreen.storyboard
-    │   │   ├── PrivacyInfo.xcprivacy
-    │   │   └── main.m
-    │   └── myAppTests
-    │       ├── Info.plist
-    │       └── myAppTests.m
-    ├── jest.config.js
-    ├── metro.config.js
+    ├── irubey-chores-app-shared-1.0.1.tgz
     ├── package-lock.json
     ├── package.json
+    ├── sharedTree.txt
     ├── src
-    │   └── screens
-    │       ├── DetailsScreen.tsx
-    │       └── Homescreen.tsx
+    │   ├── enums
+    │   │   ├── chores.ts
+    │   │   ├── common.ts
+    │   │   ├── events.ts
+    │   │   ├── expenses.ts
+    │   │   ├── household.ts
+    │   │   ├── index.ts
+    │   │   ├── messages.ts
+    │   │   ├── notifications.ts
+    │   │   ├── poll.ts
+    │   │   └── users.ts
+    │   ├── index.ts
+    │   ├── interfaces
+    │   │   ├── apiResponse.ts
+    │   │   ├── choreTemplate.ts
+    │   │   ├── dashboardSummary.ts
+    │   │   ├── index.ts
+    │   │   └── pagination.ts
+    │   └── types
+    │       ├── chore.ts
+    │       ├── event.ts
+    │       ├── expense.ts
+    │       ├── household.ts
+    │       ├── index.ts
+    │       ├── message.ts
+    │       ├── notification.ts
+    │       ├── socketEvents.ts
+    │       ├── thread.ts
+    │       ├── user.ts
+    │       └── utils.ts
     └── tsconfig.json
 
-110 directories, 339 files
+99 directories, 342 files

@@ -62,6 +62,13 @@ export interface RemoveMemberDTO {
   userId: string;
 }
 
+export interface HouseholdInvitation {
+  id: string;
+  householdId: string;
+  status: "pending" | "accepted" | "rejected";
+  household: HouseholdWithMembers;
+}
+
 export interface HouseholdUpdateEvent {
   household: Household;
 }
@@ -72,5 +79,5 @@ export interface HouseholdWithMembers extends Household {
 
 export interface HouseholdMemberWithUser extends HouseholdMember {
   user?: User;
-  household?: Household;
+  household?: HouseholdWithMembers;
 }
