@@ -74,7 +74,7 @@ export interface HouseholdUpdateEvent {
 }
 
 export interface HouseholdWithMembers extends Household {
-  members?: HouseholdMember[];
+  members?: HouseholdMemberWithUser[];
 }
 
 export interface HouseholdMemberWithUser extends HouseholdMember {

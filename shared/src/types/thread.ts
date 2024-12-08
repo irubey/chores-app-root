@@ -1,4 +1,9 @@
-import { CreateMessageDTO, Message, MessageWithDetails } from "./message";
+import {
+  CreateMessageDTO,
+  Message,
+  MessageWithDetails,
+  CreateInitialMessageDTO,
+} from "./message";
 import { HouseholdMember } from "./household";
 import { User } from "./user";
 import { Household } from "./household";
@@ -35,7 +40,7 @@ export interface CreateThreadDTO {
   householdId: string;
   title?: string;
   participants: string[];
-  initialMessage?: CreateMessageDTO;
+  initialMessage?: CreateInitialMessageDTO;
 }
 
 export interface UpdateThreadDTO {

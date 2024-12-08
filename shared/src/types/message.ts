@@ -232,3 +232,11 @@ export interface PollUpdateEvent {
   messageId: string;
   poll: PollWithDetails;
 }
+
+export interface CreateInitialMessageDTO
+  extends Omit<CreateMessageDTO, "threadId"> {
+  content: string;
+  attachments?: CreateAttachmentDTO[];
+  mentions?: string[]; // Array of userIds
+  poll?: CreatePollDTO;
+}
