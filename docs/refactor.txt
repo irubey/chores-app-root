@@ -1,0 +1,98 @@
+React Query Refactor Plan
+1. State Management Changes
+Auth/User State (Keep Context)
+Maintain UserContext for auth-related state
+Handle login, logout, registration
+Manage user preferences and session
+Keep authentication headers and tokens
+Ensure that the context only contains necessary data to avoid unnecessary re-renders. 
+Use useMemo and useCallback where appropriate to optimize performance.
+
+Server State (Move to React Query)
+Replace HouseholdsContext with React Query
+Remove custom caching and request management
+Let React Query handle loading states, errors, and retries
+Utilize React Query's built-in cache invalidation
+2. API Layer Restructure
+Remove
+BaseApiClient class
+RequestManager
+Custom deduplication logic
+Complex interceptor setup
+Keep/Update
+Axios instance configuration
+Basic error handling interceptors
+Authentication interceptors
+Logger integration
+New Structure
+Functional API methods instead of classes
+Centralized error handling in apiUtils
+Type-safe request/response handling
+Simplified service organization
+Organize API functions in a clear and consistent manner, possibly grouping them by feature or resource.
+Ensure that interceptors handle token refresh and error logging properly.
+3. API Utils and Types
+apiUtils.ts
+handleApiRequest utility for consistent error handling
+Pagination helper functions
+Type-safe response transformers
+Common query configurations
+Types
+ApiResponse interface
+RequestConfig type
+PaginationParams type
+Error types
+4. Service Layer
+Structure
+Organize by domain (households, threads, etc.)
+Functional approach with named exports
+Consistent error handling
+TypeScript types for all requests/responses
+Example Service
+householdApi = {
+households: { list, get, create, update, delete },
+members: { list, update, remove },
+invitations: { send, respond, list }
+}
+Ensure consistent naming conventions across all services.
+Keep services focused on making API calls. 
+Move any data transformation or business logic to custom hooks or separate utility functions.
+5. React Query Implementation
+Query Keys
+Consistent key structure
+Typed query keys
+Key factories per domain
+Custom Hooks
+Domain-specific hooks (useHouseholds, useThreads)
+Encapsulated query logic
+Leverage React Query's features like select to transform data.
+Handle loading and error states within the hooks when appropriate.
+Proper TypeScript types
+Error handling and loading states
+Features
+Automatic background updates
+Optimistic updates
+Infinite queries for pagination
+Mutations with cache updates
+Use React Query's refetchOnWindowFocus and staleTime configurations to optimize network requests.
+Utilize onMutate, onError, and onSettled callbacks in mutations for optimistic updates and error handling.
+6. Component Updates
+Changes
+Remove context usage where appropriate
+Use React Query hooks
+Implement loading states
+Handle errors consistently
+Add suspense boundaries
+Example Pattern
+const Component = () => {
+const { data, isLoading } = useCustomHook()
+return <UI data={data} loading={isLoading} />
+}
+7. Migration Steps
+Set up React Query provider
+Create new API utilities
+Convert one service to functional approach
+Create corresponding React Query hooks
+Update components to use new hooks
+Remove old context/state management
+Repeat for each domain
