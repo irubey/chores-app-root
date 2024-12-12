@@ -1,0 +1,22 @@
+export enum TransactionStatus {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+}
+
+export enum ExpenseCategory {
+  FOOD = "FOOD",
+  TRANSPORTATION = "TRANSPORTATION",
+  HOUSING = "HOUSING",
+  UTILITIES = "UTILITIES",
+  ENTERTAINMENT = "ENTERTAINMENT",
+  OTHER = "OTHER",
+}
+
+export enum ExpenseAction {
+  CREATED = "CREATED",
+  UPDATED = "UPDATED",
+  PAID = "PAID",
+  SPLIT = "SPLIT",
+  DELETED = "DELETED",
+  RECEIPT_UPLOADED = "RECEIPT_UPLOADED",
+}

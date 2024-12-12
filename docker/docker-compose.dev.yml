@@ -1,0 +1,63 @@
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      args:
+        NPM_TOKEN: ${NPM_TOKEN}
+    container_name: backend_dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+      - /app/dist
+      - /app/.prisma
+      - ../backend/prisma/migrations:/app/prisma/migrations
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+    env_file:
+      - ../backend/.env
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    entrypoint: ["sh", "/app/entrypoint.sh"]
+    command: ["npm", "run", "dev"]
+
+  db:
+    image: postgres:14
+    container_name: postgres_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data_dev:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: X7v$!Qk2u4mB
+      POSTGRES_DB: userDb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d userDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data_dev:
+  redis_data_dev:

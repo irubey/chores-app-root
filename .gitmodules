@@ -1,0 +1,9 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/irubey/chores-app-frontend.git
+[submodule "backend"]
+	path = backend
+	url = https://github.com/irubey/chores-app-backend.git
+[submodule "mobile"]
+	path = mobile
+	url = https://github.com/irubey/chores-app-mobile.git
