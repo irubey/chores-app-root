@@ -34,6 +34,9 @@ export interface CreateMessageDTO {
 
 export interface UpdateMessageDTO {
   content?: string;
+  attachments?: CreateAttachmentDTO[];
+  mentions?: string[];
+  poll?: CreatePollDTO;
 }
 
 export interface Reaction {

@@ -8,4 +8,3 @@ export * from "./notification";
 export * from "./utils";
 export * from "./thread";
 export * from "./socketEvents";
-export * from "../interfaces/apiResponse";
