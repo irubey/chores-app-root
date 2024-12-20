@@ -3,6 +3,8 @@ import {
   SubtaskStatus,
   ChoreSwapRequestStatus,
   ChoreAction,
+  RecurrenceFrequency,
+  DaysOfWeek,
 } from "../enums";
 
 import { User } from "./user";
@@ -71,6 +73,28 @@ export interface ChoreHistory {
   action: ChoreAction;
   changedById: string;
   changedAt: Date;
+}
+
+export interface CreateRecurrenceRuleDTO {
+  frequency: RecurrenceFrequency;
+  interval: number;
+  byWeekDay?: DaysOfWeek[];
+  byMonthDay?: number[];
+  bySetPos?: number;
+  count?: number;
+  until?: Date;
+  customRuleString?: string;
+}
+
+export interface UpdateRecurrenceRuleDTO {
+  frequency?: RecurrenceFrequency;
+  interval?: number;
+  byWeekDay?: DaysOfWeek[];
+  byMonthDay?: number[];
+  bySetPos?: number;
+  count?: number;
+  until?: Date;
+  customRuleString?: string;
 }
 
 // DTOs
