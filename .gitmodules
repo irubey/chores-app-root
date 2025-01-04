@@ -4,6 +4,7 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/irubey/chores-app-backend.git
+	branch = main
 [submodule "mobile"]
 	path = mobile
 	url = https://github.com/irubey/chores-app-mobile.git
