@@ -2,8 +2,6 @@
 
 A modern web application designed to streamline household coordination through integrated messaging, expense tracking, chore management, and shared calendars.
 
-![Hearth Logo](path/to/logo.png) <!-- TODO: Add your logo -->
-
 ## 🌟 Features
 
 ### 💬 Real-Time Messaging & Collaboration
